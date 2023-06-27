@@ -1,0 +1,34 @@
+project:
+  type: website
+  output-dir: docs
+  preview:
+    port: 4200
+    browser: true
+    navigate: true
+
+website:
+  title: "GPTAttentionPerformance"
+  description: "A computational modeling project examining whether or not a GPT model can simulate human performance in classic attention and performance tasks."
+  repo-url: https://github.com/CrumpLab/GPTAttentionPerformance
+  repo-actions: [source, edit, issue]
+  site-url: "https://crumplab.com/GPTAttentionPerformance"
+  search: true
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - icon: github
+        href: https://github.com/CrumpLab/GPTAttentionPerformance
+        aria-label: GitHub
+  sidebar:
+    - title: "Home"
+      style: "floating"
+      collapse-level: 3
+      align: left
+      contents: auto
+
+format:
+  html:
+    theme: minty
+    css: styles.css
+    toc: true
