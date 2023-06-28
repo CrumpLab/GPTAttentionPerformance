@@ -1,0 +1,145 @@
+---
+title: "Pilot Simulation 5: Send and return JSON"
+author:
+  - name: Matthew J. C. Crump
+    orcid: 0000-0002-5612-0090
+    email: mcrump@brooklyn.cuny.edu
+    affiliations:
+      - name: Brooklyn College of CUNY
+abstract: "Simulation 5 is another attempt to improve the quality of long JSON objects returned by GPT. "
+date: 6-28-2023
+title-block-style: default
+order: 6
+format:
+  html:
+    code-overflow: wrap
+    code-fold: true
+    code-summary: "Show the code"
+---
+
+## State:
+
+Started. Code seems to work.
+
+## Approach
+
+Create a dataframe containing the trial-by-trial structure of a Stroop task. Create columns for response and reaction time, put question marks in the rows for those columns. The question marks represent missing data that the model needs to fill in.
+
+Convert the dataframe to json, and send the json to the model as part of the prompt. Have the model return a json with the simulated data filled in.
+
+Additionally, use gpt-3.5-turbo-16k model. This increases the maximum number of tokens.
+
+
+## Load libraries
+
+```{r}
+#| message: false
+#| warning: false
+library(tidyverse)
+library(openai)
+library(patchwork)
+library(xtable)
+```
+
+
+## Run model
+
+```{r, eval=FALSE}
+# use the colors red, green, blue, and yellow
+
+# four possible congruent items
+congruent_items <- data.frame(word  = c("red","green","blue","yellow"),
+                              color = c("red","green","blue","yellow"))
+
+# 12 possible congruent items
+incongruent_items <- data.frame(word  = c("red","red","red",
+                                          "green","green","green",
+                                          "blue","blue","blue",
+                                          "yellow","yellow","yellow"),
+                              color = c("green","blue","yellow",
+                                        "blue","yellow","red",
+                                        "red","yellow","green",
+                                        "red","blue","green"))
+
+# construct data frame
+# generate 50% congruent and 50% incongruent trials
+# 12 each (congruent and incongruent)
+
+congruent_trials <- congruent_items[rep(1:nrow(congruent_items),3),]
+incongruent_trials <- incongruent_items[rep(1:nrow(incongruent_items),1),]
+trials <- rbind(congruent_trials,incongruent_trials)
+trials <- trials[sample(1:nrow(trials)),]
+trials <- trials %>%
+  mutate(trial = 1:nrow(trials),
+         "instruction" = "Identify color",
+         response = "?",
+         reaction_time = "?") %>%
+  relocate(instruction) %>%
+  relocate(trial)
+
+#set up variables to store data
+all_sim_data <- tibble()
+gpt_response_list <- list()
+
+# request multiple subjects
+# submit a query to open ai using the following prompt
+# note: responses in JSON format are requested
+
+for(i in 1:2){
+  print(i)
+  
+   # run the api call to openai
+ gpt_response <- create_chat_completion(
+   model = "gpt-3.5-turbo-16k",
+   max_tokens = 10000,
+   messages = list(
+       list(
+           "role" = "system",
+           "content" = "You are a simulated participant in a human cognition experiment. Complete the task as instructed and record your simulated responses in a JSON file"),
+       list("role" = "assistant",
+            "content" = "OK, I am ready."),
+       list("role" = "user",
+           "content" = paste('You are a simulated participant in a human cognition experiment. Complete the task as instructed and record your simulated responses in a JSON file. Your task is to simulate human performance in Stroop task. You will be shown a Stroop task in the form a JSON object. The JSON object contains the word and color presented on each trial. Your task is to identify the ink-color of the word as quickly and accurately as a human participant would. The JSON object contains the symbol ? in locations where you will generate simulated responses. You will generate a simulated identification response, and a simulated reaction time. Put the simulated identification response and reaction time into a JSON array using this format: [{"trial": "trial number, integer", "instruction" = "the task instruction, string" "word": "the name of the word, string","color": "the color of the word, string","response": "the simulated identification response, string","reaction_time": "the simulated reaction time, milliseconds an integer"}].',
+                       "\n\n",
+                       jsonlite::toJSON(trials), collapse = "\n")
+           
+       )
+   )
+)
+  
+  # save the output from openai
+  gpt_response_list[[i]] <- gpt_response
+  print(gpt_response$usage$total_tokens)
+  
+  # validate the JSON  
+  test_JSON <- jsonlite::validate(gpt_response$choices$message.content)
+
+  # validation checks pass, write the simulated data to all_sim_data 
+  if(test_JSON == TRUE){
+    sim_data <- jsonlite::fromJSON(gpt_response$choices$message.content)
+    
+    if(sum(names(sim_data) == c("trial","instruction","word","color","response","reaction_time")) == 6) {
+      
+      sim_data <- sim_data %>%
+        mutate(sim_subject = i)
+  
+      all_sim_data <- rbind(all_sim_data,sim_data)
+    }
+    
+  }
+}
+
+# model responses are in JSON format
+#save.image("data/simulation_5.RData")
+```
+
+
+
+
+
+
+
+
+
+
+

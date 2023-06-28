@@ -1,5 +1,5 @@
 ---
-title: "Simulation 3: Proportion congruent"
+title: "Pilot Simulation 3: Proportion congruent"
 author:
   - name: Matthew J. C. Crump
     orcid: 0000-0002-5612-0090
@@ -9,7 +9,7 @@ author:
 abstract: "Simulation 3 gave GPT-3.5-Turbo the task of generating reaction time and accuracy data for a basic Stroop task presented in the form of text prompts. The major difference from Simulation 1 was to include a list-wide proportion congruent manipulation."
 date: 6-28-2023
 title-block-style: default
-order: 3
+order: 4
 format:
   html:
     code-overflow: wrap
@@ -23,6 +23,8 @@ Started
 Pilot data
 
 Half-baked. Successfully ran 14 simulated subjects, but requested 20. May need to refactor the code to allow for longer prompts
+
+See Simulation 6 instead.
 
 ## Recap
 

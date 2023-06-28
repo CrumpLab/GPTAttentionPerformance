@@ -107,58 +107,184 @@
   {
     "objectID": "modeling/S3_stroop_pc.html",
     "href": "modeling/S3_stroop_pc.html",
-    "title": "Simulation 3: Proportion congruent",
+    "title": "Pilot Simulation 3: Proportion congruent",
     "section": "",
-    "text": "Started Pilot data\nHalf-baked. Successfully ran 14 simulated subjects, but requested 20. May need to refactor the code to allow for longer prompts"
+    "text": "Started Pilot data\nHalf-baked. Successfully ran 14 simulated subjects, but requested 20. May need to refactor the code to allow for longer prompts\nSee Simulation 6 instead."
   },
   {
     "objectID": "modeling/S3_stroop_pc.html#state",
     "href": "modeling/S3_stroop_pc.html#state",
-    "title": "Simulation 3: Proportion congruent",
+    "title": "Pilot Simulation 3: Proportion congruent",
     "section": "",
-    "text": "Started Pilot data\nHalf-baked. Successfully ran 14 simulated subjects, but requested 20. May need to refactor the code to allow for longer prompts"
+    "text": "Started Pilot data\nHalf-baked. Successfully ran 14 simulated subjects, but requested 20. May need to refactor the code to allow for longer prompts\nSee Simulation 6 instead."
   },
   {
     "objectID": "modeling/S3_stroop_pc.html#recap",
     "href": "modeling/S3_stroop_pc.html#recap",
-    "title": "Simulation 3: Proportion congruent",
+    "title": "Pilot Simulation 3: Proportion congruent",
     "section": "Recap",
     "text": "Recap\nSimulation one showed that GPT-3.5-Turbo can complete a Stroop task presented in the form of text prompts, and generate patterns of data that resemble human performance in several respects. For example, the model generated faster reaction times for congruent than incongruent items. The model generated reactions with inter and intra-subject variability. The model also performed with 100% accuracy, and chose implausibly round numbers. The second simulation varied the prompt to encourage more variability in accuracy and reaction time number generation. The reaction times appeared as if they were sampled from a continuous distribution. Accuracy rates for incongruent items varied across subjects.\nIn simulation 1 the model also generated reaction times that were consistent with congruency sequence effects. Specifically, the simulated Stroop effect from trials preceded by a congruent item was found to be larger than the Stroop effect from trials preceded by an incongruent item. The model was not given instructions regarding the congruency sequence, and it is somewhat intriguing that it generated data consistent with the presence of that effect. One possibility is that the models training corpus contains raw data from Stroop experiments, in which case it may be possible that the model generating data patterns for the present simulations in the style of existing training data.\nI don’t know enough about how the model works, or the data it was trained on, to make strong claims or conclusions about these issues. Nevertheless, these issues are relevant to fleshing out concerns about using LLMs to spoof human data. In this case, the model appears to spoof multiple aspects of human performance in the Stroop task.\nThe purpose of the simulation 3 was to determine whether the model will generate data consistent with list-wide proportion congruent effects, without being prompted to do so."
   },
   {
     "objectID": "modeling/S3_stroop_pc.html#load-libraries",
     "href": "modeling/S3_stroop_pc.html#load-libraries",
-    "title": "Simulation 3: Proportion congruent",
+    "title": "Pilot Simulation 3: Proportion congruent",
     "section": "Load libraries",
     "text": "Load libraries\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(openai)\nlibrary(patchwork)\nlibrary(xtable)"
   },
   {
     "objectID": "modeling/S3_stroop_pc.html#run-model",
     "href": "modeling/S3_stroop_pc.html#run-model",
-    "title": "Simulation 3: Proportion congruent",
+    "title": "Pilot Simulation 3: Proportion congruent",
     "section": "Run model",
     "text": "Run model\nNotes: 20 simulated subjects. 32 Stroop trials each. First 10 subjects are given high proportion congruent, last 10 given low proportion congruent.\nUnlike the previous simulations, each subject is given a different randomized order.\nThe new prompt is shown in the code.\nUsed default params for gpt-3.5-turbo from the openai library.\nProblems: This code produced 14 valid JSON files out of 20.\n\n\nShow the code\n# use the colors red, green, blue, and yellow\n\n# four possible congruent items\ncongruent_items &lt;- c(\"The word red printed in the color red\",\n                     \"The word blue printed in the color blue\",\n                     \"The word yellow printed in the color yellow\",\n                     \"The word green printed in the color green\")\n\n# four possible incongruent items\nincongruent_items &lt;- c(\"The word red printed in the color blue\",\n                       \"The word red printed in the color green\",\n                       \"The word red printed in the color yellow\",\n                       \"The word blue printed in the color red\",\n                       \"The word blue printed in the color green\",\n                       \"The word blue printed in the color yellow\",\n                       \"The word yellow printed in the color red\",\n                       \"The word yellow printed in the color blue\",\n                       \"The word yellow printed in the color green\",\n                       \"The word green printed in the color red\",\n                       \"The word green printed in the color blue\",\n                       \"The word green printed in the color yellow\")\n\n#set up variables to store data\nall_sim_data &lt;- tibble()\ngpt_response_list &lt;- list()\n\n# request multiple subjects\n# submit a query to open ai using the following prompt\n# note: responses in JSON format are requested\n\nfor(i in 1:20){\n  print(i)\n  \n  # generate 50% congruent and 50% incongruent trials\n  # 12 each (congruent and incongruent)\n  hpc_trials &lt;-  sample(c(rep(congruent_items,3*2),sample(incongruent_items,8)))\n  lpc_trials &lt;-  sample(c(rep(congruent_items,2),rep(incongruent_items,2)))\n  \n  # choose proportion congruent based on subject number\n  if (i &lt;= 10) {\n    trials &lt;- hpc_trials\n    proportion_congruent &lt;- \"high\"\n  } else {\n    trials &lt;- lpc_trials\n    proportion_congruent &lt;- \"low\"\n  }\n  \n  gpt_response &lt;- create_chat_completion(\n   model = \"gpt-3.5-turbo\",\n   messages = list(\n       list(\n           \"role\" = \"system\",\n           \"content\" = \"You are a simulated participant in a human cognition experiment. Complete the task as instructed and record your simulated responses in a JSON file\"),\n       list(\"role\" = \"assistant\",\n            \"content\" = \"OK, I am ready.\"),\n       list(\"role\" = \"user\",\n           \"content\" = paste(\"Consider the following trials of a Stroop task where you are supposed to identify the ink-color of the word as quickly and accurately as possible.\",\"-----\", paste(1:32, trials, collapse=\"\\n\") , \"-----\",'This is a simulated Stroop task. You will be shown a Stroop item in the form of a sentence. The sentence will describe a word presented in a particular ink-color. Your task is to identify the ink-color of the word as quickly and accurately as a human participant would. Your simulated reaction times should look like real human data and end in different numbers. Put the simulated identification response and reaction time into a JSON array using this format: [{\"trial\": \"trial number, integer\", \"word\": \"the name of the word, string\",\"color\": \"the color of the word, string\",\"response\": \"the simulated identification response, string\",\"reaction_time\": \"the simulated reaction time, milliseconds an integer\"}].', sep=\"\\n\")\n           \n       )\n   )\n)\n  \n  # save the output from openai\n  gpt_response_list[[i]] &lt;- gpt_response\n  \n  # validate the JSON  \n  test_JSON &lt;- jsonlite::validate(gpt_response$choices$message.content)\n\n  # validation checks pass, write the simulated data to all_sim_data \n  if(test_JSON == TRUE){\n    sim_data &lt;- jsonlite::fromJSON(gpt_response$choices$message.content)\n    \n    if(sum(names(sim_data) == c(\"trial\",\"word\",\"color\",\"response\",\"reaction_time\")) == 5) {\n      \n      sim_data &lt;- sim_data %&gt;%\n        mutate(sim_subject = i,\n               proportion_congruent = proportion_congruent)\n  \n      all_sim_data &lt;- rbind(all_sim_data,sim_data)\n    }\n    \n  }\n}\n\n# model responses are in JSON format\nsave.image(\"data/simulation_3.RData\")"
   },
   {
     "objectID": "modeling/S3_stroop_pc.html#analysis",
     "href": "modeling/S3_stroop_pc.html#analysis",
-    "title": "Simulation 3: Proportion congruent",
+    "title": "Pilot Simulation 3: Proportion congruent",
     "section": "Analysis",
     "text": "Analysis\n\n\nShow the code\nload(file = \"data/simulation_3.RData\")\n\n\nThe LLM occasionally returns invalid JSON. The simulation ran 20 times.\n\n\nShow the code\ntotal_subjects &lt;- length(unique(all_sim_data$sim_subject))\n\n\nThere were 14 out of 20 valid simulated subjects.\n\nReaction time analysis\nThis analysis has too few simulated subjects to be meaningful.\n\n\nShow the code\n# get mean RTs in each condition for each subject\nrt_data_subject_congruency &lt;- all_sim_data %&gt;%\n  mutate(congruency = case_when(word == color ~ \"congruent\",\n                                word != color ~ \"incongruent\")) %&gt;%\n  mutate(accuracy = case_when(response == color ~ TRUE,\n                              response != color ~ FALSE)) %&gt;%\n  filter(accuracy == TRUE) %&gt;%\n  group_by(proportion_congruent,congruency,sim_subject) %&gt;%\n  summarize(mean_rt = mean(reaction_time), .groups = \"drop\")\n\n# make plots\n\nggplot(rt_data_subject_congruency, aes(x = congruency,\n                                       y = mean_rt))+\n  geom_violin()+\n  stat_summary(fun = \"mean\",\n               geom = \"crossbar\",\n               color = \"red\")+\n  geom_point()+\n  theme_classic(base_size=15)+\n  ylab(\"Mean Simulated Reaction Time\") +\n  facet_wrap(~proportion_congruent)\n\n\n\n\n\n\n\nA closer look at reaction times\nAs with previous simulations, the reaction times look sort of Ex-Gaussian.\n\n\nShow the code\nggplot(all_sim_data, aes(x=reaction_time))+\n  geom_histogram(binwidth=50, color=\"white\")+\n  theme_classic()+\n  xlab(\"Simulated Reaction Times\")\n\n\n\n\n\nSetting the bin-wdith smaller shows that the model used many more numbers in between round intervals.\n\n\nShow the code\nggplot(all_sim_data, aes(x=reaction_time))+\n  geom_histogram(binwidth=10, color=\"white\")+\n  scale_x_continuous(breaks=seq(250,1000,50))+\n  theme_classic(base_size = 10)+\n  xlab(\"Simulated Reaction Times\")\n\n\n\n\n\nThe model did produce simulated reaction times that ended in all possible digits. At the same time, it shows a preference for values ending in zero.\n\n\nShow the code\nall_sim_data &lt;- all_sim_data %&gt;%\n  mutate(ending_digit = stringr::str_extract(all_sim_data$reaction_time, \"\\\\d$\")) %&gt;%\n  mutate(ending_digit = as.numeric(ending_digit))\n\nggplot(all_sim_data, aes(x=ending_digit))+\n  geom_histogram(binwidth=1, color=\"white\")+\n  scale_x_continuous(breaks=seq(0,9,1))+\n  theme_classic(base_size = 10)+\n  xlab(\"Simulated RT Ones Digit\")"
   },
   {
     "objectID": "modeling/S3_stroop_pc.html#accuracy-analysis",
     "href": "modeling/S3_stroop_pc.html#accuracy-analysis",
-    "title": "Simulation 3: Proportion congruent",
+    "title": "Pilot Simulation 3: Proportion congruent",
     "section": "Accuracy Analysis",
     "text": "Accuracy Analysis\n\n\nShow the code\n# report accuracy data\naccuracy_data_subject &lt;- all_sim_data %&gt;%\n  mutate(congruency = case_when(word == color ~ \"congruent\",\n                                word != color ~ \"incongruent\")) %&gt;%\n  mutate(accuracy = case_when(response == color ~ TRUE,\n                              response != color ~ FALSE)) %&gt;%\n  group_by(congruency,sim_subject) %&gt;%\n  summarize(proportion_correct = mean(accuracy), .groups = \"drop\")\n\nggplot(accuracy_data_subject, aes(x = congruency,\n                                  y = proportion_correct))+\n  geom_violin()+\n  stat_summary(fun = \"mean\",\n               geom = \"crossbar\",\n               color = \"red\")+\n  geom_point()+\n  theme_classic(base_size=15)+\n  ylab(\"Simulated Proportion Correct\")+\n  xlab(\"Congruency\")"
   },
   {
     "objectID": "modeling/S3_stroop_pc.html#discussion",
     "href": "modeling/S3_stroop_pc.html#discussion",
-    "title": "Simulation 3: Proportion congruent",
+    "title": "Pilot Simulation 3: Proportion congruent",
     "section": "Discussion",
     "text": "Discussion\nThis simulation used a slightly longer prompt than the first two simulation. The first two simulations had 24 simulated trials, and this one had 32. I also tried a version with 48 trials per subject, but received 502 gateway errors from the API. I’m not sure whether the prompt was too long, or the expected response was too long."
+  },
+  {
+    "objectID": "modeling/S5_df_to_json.html",
+    "href": "modeling/S5_df_to_json.html",
+    "title": "Pilot Simulation 5: Send and return JSON",
+    "section": "",
+    "text": "Started. Code seems to work."
+  },
+  {
+    "objectID": "modeling/S5_df_to_json.html#state",
+    "href": "modeling/S5_df_to_json.html#state",
+    "title": "Pilot Simulation 5: Send and return JSON",
+    "section": "",
+    "text": "Started. Code seems to work."
+  },
+  {
+    "objectID": "modeling/S5_df_to_json.html#approach",
+    "href": "modeling/S5_df_to_json.html#approach",
+    "title": "Pilot Simulation 5: Send and return JSON",
+    "section": "Approach",
+    "text": "Approach\nCreate a dataframe containing the trial-by-trial structure of a Stroop task. Create columns for response and reaction time, put question marks in the rows for those columns. The question marks represent missing data that the model needs to fill in.\nConvert the dataframe to json, and send the json to the model as part of the prompt. Have the model return a json with the simulated data filled in.\nAdditionally, use gpt-3.5-turbo-16k model. This increases the maximum number of tokens."
+  },
+  {
+    "objectID": "modeling/S5_df_to_json.html#load-libraries",
+    "href": "modeling/S5_df_to_json.html#load-libraries",
+    "title": "Pilot Simulation 5: Send and return JSON",
+    "section": "Load libraries",
+    "text": "Load libraries\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(openai)\nlibrary(patchwork)\nlibrary(xtable)"
+  },
+  {
+    "objectID": "modeling/S5_df_to_json.html#run-model",
+    "href": "modeling/S5_df_to_json.html#run-model",
+    "title": "Pilot Simulation 5: Send and return JSON",
+    "section": "Run model",
+    "text": "Run model\n\n\nShow the code\n# use the colors red, green, blue, and yellow\n\n# four possible congruent items\ncongruent_items &lt;- data.frame(word  = c(\"red\",\"green\",\"blue\",\"yellow\"),\n                              color = c(\"red\",\"green\",\"blue\",\"yellow\"))\n\n# 12 possible congruent items\nincongruent_items &lt;- data.frame(word  = c(\"red\",\"red\",\"red\",\n                                          \"green\",\"green\",\"green\",\n                                          \"blue\",\"blue\",\"blue\",\n                                          \"yellow\",\"yellow\",\"yellow\"),\n                              color = c(\"green\",\"blue\",\"yellow\",\n                                        \"blue\",\"yellow\",\"red\",\n                                        \"red\",\"yellow\",\"green\",\n                                        \"red\",\"blue\",\"green\"))\n\n# construct data frame\n# generate 50% congruent and 50% incongruent trials\n# 12 each (congruent and incongruent)\n\ncongruent_trials &lt;- congruent_items[rep(1:nrow(congruent_items),3),]\nincongruent_trials &lt;- incongruent_items[rep(1:nrow(incongruent_items),1),]\ntrials &lt;- rbind(congruent_trials,incongruent_trials)\ntrials &lt;- trials[sample(1:nrow(trials)),]\ntrials &lt;- trials %&gt;%\n  mutate(trial = 1:nrow(trials),\n         \"instruction\" = \"Identify color\",\n         response = \"?\",\n         reaction_time = \"?\") %&gt;%\n  relocate(instruction) %&gt;%\n  relocate(trial)\n\n#set up variables to store data\nall_sim_data &lt;- tibble()\ngpt_response_list &lt;- list()\n\n# request multiple subjects\n# submit a query to open ai using the following prompt\n# note: responses in JSON format are requested\n\nfor(i in 1:2){\n  print(i)\n  \n   # run the api call to openai\n gpt_response &lt;- create_chat_completion(\n   model = \"gpt-3.5-turbo-16k\",\n   max_tokens = 10000,\n   messages = list(\n       list(\n           \"role\" = \"system\",\n           \"content\" = \"You are a simulated participant in a human cognition experiment. Complete the task as instructed and record your simulated responses in a JSON file\"),\n       list(\"role\" = \"assistant\",\n            \"content\" = \"OK, I am ready.\"),\n       list(\"role\" = \"user\",\n           \"content\" = paste('You are a simulated participant in a human cognition experiment. Complete the task as instructed and record your simulated responses in a JSON file. Your task is to simulate human performance in Stroop task. You will be shown a Stroop task in the form a JSON object. The JSON object contains the word and color presented on each trial. Your task is to identify the ink-color of the word as quickly and accurately as a human participant would. The JSON object contains the symbol ? in locations where you will generate simulated responses. You will generate a simulated identification response, and a simulated reaction time. Put the simulated identification response and reaction time into a JSON array using this format: [{\"trial\": \"trial number, integer\", \"instruction\" = \"the task instruction, string\" \"word\": \"the name of the word, string\",\"color\": \"the color of the word, string\",\"response\": \"the simulated identification response, string\",\"reaction_time\": \"the simulated reaction time, milliseconds an integer\"}].',\n                       \"\\n\\n\",\n                       jsonlite::toJSON(trials), collapse = \"\\n\")\n           \n       )\n   )\n)\n  \n  # save the output from openai\n  gpt_response_list[[i]] &lt;- gpt_response\n  print(gpt_response$usage$total_tokens)\n  \n  # validate the JSON  \n  test_JSON &lt;- jsonlite::validate(gpt_response$choices$message.content)\n\n  # validation checks pass, write the simulated data to all_sim_data \n  if(test_JSON == TRUE){\n    sim_data &lt;- jsonlite::fromJSON(gpt_response$choices$message.content)\n    \n    if(sum(names(sim_data) == c(\"trial\",\"instruction\",\"word\",\"color\",\"response\",\"reaction_time\")) == 6) {\n      \n      sim_data &lt;- sim_data %&gt;%\n        mutate(sim_subject = i)\n  \n      all_sim_data &lt;- rbind(all_sim_data,sim_data)\n    }\n    \n  }\n}\n\n# model responses are in JSON format\n#save.image(\"data/simulation_5.RData\")"
+  },
+  {
+    "objectID": "modeling/S4_trial_by_trial.html",
+    "href": "modeling/S4_trial_by_trial.html",
+    "title": "Pilot Simulation 4: Trial-by-trial",
+    "section": "",
+    "text": "Started. Seems to be working. Too slow to continue."
+  },
+  {
+    "objectID": "modeling/S4_trial_by_trial.html#state",
+    "href": "modeling/S4_trial_by_trial.html#state",
+    "title": "Pilot Simulation 4: Trial-by-trial",
+    "section": "",
+    "text": "Started. Seems to be working. Too slow to continue."
+  },
+  {
+    "objectID": "modeling/S4_trial_by_trial.html#goals",
+    "href": "modeling/S4_trial_by_trial.html#goals",
+    "title": "Pilot Simulation 4: Trial-by-trial",
+    "section": "Goals",
+    "text": "Goals\nSimulations 1 - 3 package all of the instructions and task into one prompt, and request that the LLM produce responses to each trial in a JSON response object. Simulation 3 had the longest prompt so far, and the model returned several invalid JSON responses. The openai forums suggest that other users experience similar problems. One solution may be to improve the prompt.\nThis simulation pursues a different solution, which is to present the model with one trial at a time, and then ask the model to return a JSON object for each trial, one at a time. I already tried something like this in my blog post, and am going to try again and see what happens.\nThis approach will likely also cause the whole process to take much longer than before."
+  },
+  {
+    "objectID": "modeling/S4_trial_by_trial.html#load-libraries",
+    "href": "modeling/S4_trial_by_trial.html#load-libraries",
+    "title": "Pilot Simulation 4: Trial-by-trial",
+    "section": "Load libraries",
+    "text": "Load libraries\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(openai)\nlibrary(patchwork)\nlibrary(xtable)"
+  },
+  {
+    "objectID": "modeling/S4_trial_by_trial.html#run-model",
+    "href": "modeling/S4_trial_by_trial.html#run-model",
+    "title": "Pilot Simulation 4: Trial-by-trial",
+    "section": "Run model",
+    "text": "Run model\n\n\nShow the code\n# use the colors red, green, blue, and yellow\n\n# four possible congruent items\ncongruent_items &lt;- c(\"The word red printed in the color red\",\n                     \"The word blue printed in the color blue\",\n                     \"The word yellow printed in the color yellow\",\n                     \"The word green printed in the color green\")\n\n# four possible incongruent items\nincongruent_items &lt;- c(\"The word red printed in the color blue\",\n                       \"The word red printed in the color green\",\n                       \"The word red printed in the color yellow\",\n                       \"The word blue printed in the color red\",\n                       \"The word blue printed in the color green\",\n                       \"The word blue printed in the color yellow\",\n                       \"The word yellow printed in the color red\",\n                       \"The word yellow printed in the color blue\",\n                       \"The word yellow printed in the color green\",\n                       \"The word green printed in the color red\",\n                       \"The word green printed in the color blue\",\n                       \"The word green printed in the color yellow\")\n\n# generate 50% congruent and 50% incongruent trials\n# 12 each (congruent and incongruent)\ntrials &lt;- sample(c(rep(congruent_items,3),incongruent_items))\n\n\n#set up variables to store data\nsim_data &lt;- tibble()\nall_sim_data &lt;- tibble()\ngpt_response_list &lt;- list()\n\n# starting message\n\nsim_task &lt;- list(\n       list(\"role\" = \"system\",\n           \"content\" = \"You are a simulated participant in a human cognition experiment. Your task is to respond as quickly and accurately as possible, and record your simulated responses in JSON. The JSON object should only contain the results for the current trial.\"),\n       list(\"role\" = \"assistant\",\n           \"content\" = \"OK, what are the instructions for this task?\"),\n       list(\"role\" = \"user\",\n           \"content\" = 'This is a simulated Stroop task. You will be shown a Stroop item in the form of a sentence. The sentence will describe a word presented in a particular ink-color. Your task is to identify the ink-color of the word as quickly and accurately as possible. Put the simulated identification response and reaction time into a JSON array using this format: [{\"trial\": \"trial number, integer\", \"word\": \"the name of the word, string\",\"color\": \"the color of the word, string\",\"response\": \"the simulated identification response, string\",\"reaction_time\": \"the simulated reaction time, milliseconds an integer\"}].'),\n       list(\"role\" = \"assistant\",\n           \"content\" = \"OK, show the next trial.\")\n       )\n\ntask_names &lt;- c(\"trial\",\"word\",\"color\",\"response\",\"reaction_time\")\n\nfor(i in 1:10){\n  \n  print(i)\n  \n  # add trial to list of messages\n  sim_task[[length(sim_task)+1]] &lt;- list(\n    \"role\" = \"user\",\n    \"content\" = trials[i]\n  )\n  \n  # get response\n  gpt_response &lt;- create_chat_completion(\n   model = \"gpt-3.5-turbo\",\n   messages = sim_task\n   )\n  \n  #validate json and proceed\n  \n  if(jsonlite::validate(as.character(gpt_response$choices$message.content)) == TRUE){\n    \n    # convert JSON to tibble\n    trial_tibble &lt;- jsonlite::fromJSON(gpt_response$choices$message.content)\n    print(trial_tibble)\n    \n    # check if tibble has correct names\n    if(all(task_names == names(trial_tibble))){\n      \n      #add new row to sim\n      sim_data &lt;- rbind(sim_data,trial_tibble)\n      \n      ## response to to message list\n      sim_task[[length(sim_task)+1]] &lt;- list(\n        \"role\" = gpt_response$choices$message.role,\n        \"content\" = gpt_response$choices$message.content\n      )\n    }\n  }\n  \n}\n\n# model responses are in JSON format\n#save.image(\"data/simulation_4.RData\")"
+  },
+  {
+    "objectID": "modeling/S6_stroop_pc.html",
+    "href": "modeling/S6_stroop_pc.html",
+    "title": "Simulation 6: Proportion congruent",
+    "section": "",
+    "text": "Started. Finished."
+  },
+  {
+    "objectID": "modeling/S6_stroop_pc.html#state",
+    "href": "modeling/S6_stroop_pc.html#state",
+    "title": "Simulation 6: Proportion congruent",
+    "section": "",
+    "text": "Started. Finished."
+  },
+  {
+    "objectID": "modeling/S6_stroop_pc.html#recap",
+    "href": "modeling/S6_stroop_pc.html#recap",
+    "title": "Simulation 6: Proportion congruent",
+    "section": "Recap",
+    "text": "Recap\nSimulation 3 attempted to model the list-wide proportion congruent effect. The code frequently returned invalid JSON.\nThis simulation used the approach from simulation 5, which appears to allow longer prompts that return valid JSON with higher frequency."
+  },
+  {
+    "objectID": "modeling/S6_stroop_pc.html#load-libraries",
+    "href": "modeling/S6_stroop_pc.html#load-libraries",
+    "title": "Simulation 6: Proportion congruent",
+    "section": "Load libraries",
+    "text": "Load libraries\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(openai)\nlibrary(patchwork)\nlibrary(xtable)"
+  },
+  {
+    "objectID": "modeling/S6_stroop_pc.html#run-model",
+    "href": "modeling/S6_stroop_pc.html#run-model",
+    "title": "Simulation 6: Proportion congruent",
+    "section": "Run model",
+    "text": "Run model\nNotes: 30 simulated subjects. 48 Stroop trials each. Odd numbered subjects are given high proportion congruent list, even numbered are given low proportion congruent list.\nStarted at 1:26pm finished at 1:56pm\nTotal tokens per prompt ranged from 3500 to 4200+.\nUnlike the previous simulations, each subject is given a different randomized order.\nUsed gpt-3.5-turbo-16k, with max tokens 10000.\nProblems: This code produced 28 valid JSON files out of 30. Much better than last time. And, the prompt had a typo (that I have left in the code).\n## typo\n\"instruction\" = \"the task instruction, string\" \"word\": \"the name of the word\n\n## added comma\n\"instruction\" = \"the task instruction, string\", \"word\": \"the name of the word\nThe two invalid returns were cases where the model was being chatty, and rather than only returning JSON, it also included a preface, like, “Here is my response…”. And, I haven’t written error checking code to find possible JSON inside a text response. It’s possible the two invalid cases actually have valid JSON in the text response. The data should be in gpt_response_list.\n\n\nShow the code\n# use the colors red, green, blue, and yellow\n\n# four possible congruent items\ncongruent_items &lt;- data.frame(word  = c(\"red\",\"green\",\"blue\",\"yellow\"),\n                              color = c(\"red\",\"green\",\"blue\",\"yellow\"))\n\n# 12 possible congruent items\nincongruent_items &lt;- data.frame(word  = c(\"red\",\"red\",\"red\",\n                                          \"green\",\"green\",\"green\",\n                                          \"blue\",\"blue\",\"blue\",\n                                          \"yellow\",\"yellow\",\"yellow\"),\n                              color = c(\"green\",\"blue\",\"yellow\",\n                                        \"blue\",\"yellow\",\"red\",\n                                        \"red\",\"yellow\",\"green\",\n                                        \"red\",\"blue\",\"green\"))\n\n\n#set up variables to store data\nall_sim_data &lt;- tibble()\ngpt_response_list &lt;- list()\n\n# request multiple subjects\n# submit a query to open ai using the following prompt\n# note: responses in JSON format are requested\n\nfor(i in 1:30){\n  print(i)\n  \n  # construct trials data frame\n\n  if (i %% 2 == 1) {\n    proportion_congruent &lt;- \"high\"\n    congruent_trials &lt;- congruent_items[rep(1:nrow(congruent_items),3*3),]\n    incongruent_trials &lt;- incongruent_items[rep(1:nrow(incongruent_items),1),]\n    \n  } else {\n    proportion_congruent &lt;- \"low\"\n    congruent_trials &lt;- congruent_items[rep(1:nrow(congruent_items),3),]\n    incongruent_trials &lt;- incongruent_items[rep(1:nrow(incongruent_items),3),]\n  }\n  \n  trials &lt;- rbind(congruent_trials,incongruent_trials)\n  trials &lt;- trials[sample(1:nrow(trials)),]\n  trials &lt;- trials %&gt;%\n    mutate(trial = 1:nrow(trials),\n           \"instruction\" = \"Identify color\",\n           response = \"?\",\n           reaction_time = \"?\") %&gt;%\n    relocate(instruction) %&gt;%\n    relocate(trial)\n  \n   # run the api call to openai\n  \n gpt_response &lt;- create_chat_completion(\n   model = \"gpt-3.5-turbo-16k\",\n   max_tokens = 10000,\n   messages = list(\n       list(\n           \"role\" = \"system\",\n           \"content\" = \"You are a simulated participant in a human cognition experiment. Complete the task as instructed and record your simulated responses in a JSON file\"),\n       list(\"role\" = \"assistant\",\n            \"content\" = \"OK, I am ready.\"),\n       list(\"role\" = \"user\",\n           \"content\" = paste('You are a simulated participant in a human cognition experiment. Complete the task as instructed and record your simulated responses in a JSON file. Your task is to simulate human performance in Stroop task. You will be shown a Stroop task in the form a JSON object. The JSON object contains the word and color presented on each trial. Your task is to identify the ink-color of the word as quickly and accurately as a human participant would. The JSON object contains the symbol ? in locations where you will generate simulated responses. You will generate a simulated identification response, and a simulated reaction time. Put the simulated identification response and reaction time into a JSON array using this format: [{\"trial\": \"trial number, integer\", \"instruction\" = \"the task instruction, string\" \"word\": \"the name of the word, string\",\"color\": \"the color of the word, string\",\"response\": \"the simulated identification response, string\",\"reaction_time\": \"the simulated reaction time, milliseconds an integer\"}].',\n                       \"\\n\\n\",\n                       jsonlite::toJSON(trials), collapse = \"\\n\")\n           \n       )\n   )\n)\n  \n  # save the output from openai\n  gpt_response_list[[i]] &lt;- gpt_response\n  print(gpt_response$usage$total_tokens)\n  \n  # validate the JSON  \n  test_JSON &lt;- jsonlite::validate(gpt_response$choices$message.content)\n  print(test_JSON)\n\n  # validation checks pass, write the simulated data to all_sim_data \n  if(test_JSON == TRUE){\n    sim_data &lt;- jsonlite::fromJSON(gpt_response$choices$message.content)\n    \n    if(sum(names(sim_data) == c(\"trial\",\"instruction\",\"word\",\"color\",\"response\",\"reaction_time\")) == 6) {\n      \n      sim_data &lt;- sim_data %&gt;%\n        mutate(sim_subject = i,\n               proportion_congruent = proportion_congruent)\n  \n      all_sim_data &lt;- rbind(all_sim_data,sim_data)\n    }\n    \n  }\n}\n\n# model responses are in JSON format\nsave.image(\"data/simulation_6.RData\")"
+  },
+  {
+    "objectID": "modeling/S6_stroop_pc.html#analysis",
+    "href": "modeling/S6_stroop_pc.html#analysis",
+    "title": "Simulation 6: Proportion congruent",
+    "section": "Analysis",
+    "text": "Analysis\n\n\nShow the code\nload(file = \"data/simulation_6.RData\")\n\n\nThe LLM occasionally returns invalid JSON. The simulation ran 20 times.\n\n\nShow the code\ntotal_subjects &lt;- length(unique(all_sim_data$sim_subject))\n\n\nThere were 26 out of 30 valid simulated subjects. Two of the simulations returned invalid JSON, and two of them returned JSON with the wrong headers for the data frame.\n\nReaction time analysis\n\n\nShow the code\n# get mean RTs in each condition for each subject\nrt_data_subject_congruency &lt;- all_sim_data %&gt;%\n  mutate(congruency = case_when(word == color ~ \"congruent\",\n                                word != color ~ \"incongruent\")) %&gt;%\n  mutate(accuracy = case_when(response == color ~ TRUE,\n                              response != color ~ FALSE)) %&gt;%\n  filter(accuracy == TRUE) %&gt;%\n  group_by(proportion_congruent,congruency,sim_subject) %&gt;%\n  summarize(mean_rt = mean(reaction_time), .groups = \"drop\")\n\n# make plots\n\nggplot(rt_data_subject_congruency, aes(x = congruency,\n                                       y = mean_rt))+\n  geom_violin()+\n  stat_summary(fun = \"mean\",\n               geom = \"crossbar\",\n               color = \"red\")+\n  geom_point()+\n  theme_classic(base_size=15)+\n  ylab(\"Mean Simulated Reaction Time\") +\n  facet_wrap(~proportion_congruent)\n\n\n\n\n\nThe figure shows a larger mean Stroop effect for the simulated subjects in the high proportion than low proportion congruent conditions.\n\n\nA closer look at reaction times\nAs with previous simulations, the reaction times look sort of Ex-Gaussian, and this time there appears to be some large outliers.\n\n\nShow the code\nggplot(all_sim_data, aes(x=reaction_time))+\n  geom_histogram(binwidth=50, color=\"white\")+\n  theme_classic()+\n  xlab(\"Simulated Reaction Times\")\n\n\n\n\n\nThe prompt did not specify to produce values with different endings. As with previous simulations, the model seems to prefer values ending in 0.\n\n\nShow the code\nall_sim_data &lt;- all_sim_data %&gt;%\n  mutate(ending_digit = stringr::str_extract(all_sim_data$reaction_time, \"\\\\d$\")) %&gt;%\n  mutate(ending_digit = as.numeric(ending_digit))\n\nggplot(all_sim_data, aes(x=ending_digit))+\n  geom_histogram(binwidth=1, color=\"white\")+\n  scale_x_continuous(breaks=seq(0,9,1))+\n  theme_classic(base_size = 10)+\n  xlab(\"Simulated RT Ones Digit\")"
+  },
+  {
+    "objectID": "modeling/S6_stroop_pc.html#accuracy-analysis",
+    "href": "modeling/S6_stroop_pc.html#accuracy-analysis",
+    "title": "Simulation 6: Proportion congruent",
+    "section": "Accuracy Analysis",
+    "text": "Accuracy Analysis\nThe model performs perfectly on congruent trials, and sometimes imperfectly on incongruent trials.\n\n\nShow the code\n# report accuracy data\naccuracy_data_subject &lt;- all_sim_data %&gt;%\n  mutate(congruency = case_when(word == color ~ \"congruent\",\n                                word != color ~ \"incongruent\")) %&gt;%\n  mutate(accuracy = case_when(response == color ~ TRUE,\n                              response != color ~ FALSE)) %&gt;%\n  group_by(congruency,sim_subject) %&gt;%\n  summarize(proportion_correct = mean(accuracy), .groups = \"drop\")\n\nggplot(accuracy_data_subject, aes(x = congruency,\n                                  y = proportion_correct))+\n  geom_violin()+\n  stat_summary(fun = \"mean\",\n               geom = \"crossbar\",\n               color = \"red\")+\n  geom_point()+\n  theme_classic(base_size=15)+\n  ylab(\"Simulated Proportion Correct\")+\n  xlab(\"Congruency\")"
+  },
+  {
+    "objectID": "modeling/S6_stroop_pc.html#discussion",
+    "href": "modeling/S6_stroop_pc.html#discussion",
+    "title": "Simulation 6: Proportion congruent",
+    "section": "Discussion",
+    "text": "Discussion\nThis simulation used GPT-3.5-turbo-16k, and a slightly different prompt strategy. The model successfully returned valid JSON 28 out of 30 simulations.\nOne half of the simulated subjects received a list of 48 Stroop items that was 75% congruent. The other half received a list of 48 Stroop items that was 25% congruent. The model was not given any information about the proportion congruent manipulation in the prompt.\nThe results appear to show a larger Stroop effect for the high then low proportion congruent condition, which is the same finding consistently reported in the human cognition literature. I did not attempt to replicate this result with the model, and it is not clear if the model would consistently reproduce this result over several iterations."
   },
   {
     "objectID": "modeling/S2_stroop_instructions.html",
@@ -229,40 +355,5 @@
     "title": "Simulating Attention and Performance tasks with an LLM",
     "section": "",
     "text": "This is a website for a cognitive psychology research project. The aim of this website is to create and share reproducible research assets throughout the project lifespan. This repository is built with quarto. Source code is available from the github repository for this project."
-  },
-  {
-    "objectID": "modeling/s4_trial_by_trial.html",
-    "href": "modeling/s4_trial_by_trial.html",
-    "title": "Pilot Simulation 4: Trial-by-trial",
-    "section": "",
-    "text": "Started. Seems to be working. Too slow to continue."
-  },
-  {
-    "objectID": "modeling/s4_trial_by_trial.html#state",
-    "href": "modeling/s4_trial_by_trial.html#state",
-    "title": "Pilot Simulation 4: Trial-by-trial",
-    "section": "",
-    "text": "Started. Seems to be working. Too slow to continue."
-  },
-  {
-    "objectID": "modeling/s4_trial_by_trial.html#goals",
-    "href": "modeling/s4_trial_by_trial.html#goals",
-    "title": "Pilot Simulation 4: Trial-by-trial",
-    "section": "Goals",
-    "text": "Goals\nSimulations 1 - 3 package all of the instructions and task into one prompt, and request that the LLM produce responses to each trial in a JSON response object. Simulation 3 had the longest prompt so far, and the model returned several invalid JSON responses. The openai forums suggest that other users experience similar problems. One solution may be to improve the prompt.\nThis simulation pursues a different solution, which is to present the model with one trial at a time, and then ask the model to return a JSON object for each trial, one at a time. I already tried something like this in my blog post, and am going to try again and see what happens.\nThis approach will likely also cause the whole process to take much longer than before."
-  },
-  {
-    "objectID": "modeling/s4_trial_by_trial.html#load-libraries",
-    "href": "modeling/s4_trial_by_trial.html#load-libraries",
-    "title": "Pilot Simulation 4: Trial-by-trial",
-    "section": "Load libraries",
-    "text": "Load libraries\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(openai)\nlibrary(patchwork)\nlibrary(xtable)"
-  },
-  {
-    "objectID": "modeling/s4_trial_by_trial.html#run-model",
-    "href": "modeling/s4_trial_by_trial.html#run-model",
-    "title": "Pilot Simulation 4: Trial-by-trial",
-    "section": "Run model",
-    "text": "Run model\n\n\nShow the code\n# use the colors red, green, blue, and yellow\n\n# four possible congruent items\ncongruent_items &lt;- c(\"The word red printed in the color red\",\n                     \"The word blue printed in the color blue\",\n                     \"The word yellow printed in the color yellow\",\n                     \"The word green printed in the color green\")\n\n# four possible incongruent items\nincongruent_items &lt;- c(\"The word red printed in the color blue\",\n                       \"The word red printed in the color green\",\n                       \"The word red printed in the color yellow\",\n                       \"The word blue printed in the color red\",\n                       \"The word blue printed in the color green\",\n                       \"The word blue printed in the color yellow\",\n                       \"The word yellow printed in the color red\",\n                       \"The word yellow printed in the color blue\",\n                       \"The word yellow printed in the color green\",\n                       \"The word green printed in the color red\",\n                       \"The word green printed in the color blue\",\n                       \"The word green printed in the color yellow\")\n\n# generate 50% congruent and 50% incongruent trials\n# 12 each (congruent and incongruent)\ntrials &lt;- sample(c(rep(congruent_items,3),incongruent_items))\n\n\n#set up variables to store data\nsim_data &lt;- tibble()\nall_sim_data &lt;- tibble()\ngpt_response_list &lt;- list()\n\n# starting message\n\nsim_task &lt;- list(\n       list(\"role\" = \"system\",\n           \"content\" = \"You are a simulated participant in a human cognition experiment. Your task is to respond as quickly and accurately as possible, and record your simulated responses in JSON. The JSON object should only contain the results for the current trial.\"),\n       list(\"role\" = \"assistant\",\n           \"content\" = \"OK, what are the instructions for this task?\"),\n       list(\"role\" = \"user\",\n           \"content\" = 'This is a simulated Stroop task. You will be shown a Stroop item in the form of a sentence. The sentence will describe a word presented in a particular ink-color. Your task is to identify the ink-color of the word as quickly and accurately as possible. Put the simulated identification response and reaction time into a JSON array using this format: [{\"trial\": \"trial number, integer\", \"word\": \"the name of the word, string\",\"color\": \"the color of the word, string\",\"response\": \"the simulated identification response, string\",\"reaction_time\": \"the simulated reaction time, milliseconds an integer\"}].'),\n       list(\"role\" = \"assistant\",\n           \"content\" = \"OK, show the next trial.\")\n       )\n\ntask_names &lt;- c(\"trial\",\"word\",\"color\",\"response\",\"reaction_time\")\n\nfor(i in 1:10){\n  \n  print(i)\n  \n  # add trial to list of messages\n  sim_task[[length(sim_task)+1]] &lt;- list(\n    \"role\" = \"user\",\n    \"content\" = trials[i]\n  )\n  \n  # get response\n  gpt_response &lt;- create_chat_completion(\n   model = \"gpt-3.5-turbo\",\n   messages = sim_task\n   )\n  \n  #validate json and proceed\n  \n  if(jsonlite::validate(as.character(gpt_response$choices$message.content)) == TRUE){\n    \n    # convert JSON to tibble\n    trial_tibble &lt;- jsonlite::fromJSON(gpt_response$choices$message.content)\n    print(trial_tibble)\n    \n    # check if tibble has correct names\n    if(all(task_names == names(trial_tibble))){\n      \n      #add new row to sim\n      sim_data &lt;- rbind(sim_data,trial_tibble)\n      \n      ## response to to message list\n      sim_task[[length(sim_task)+1]] &lt;- list(\n        \"role\" = gpt_response$choices$message.role,\n        \"content\" = gpt_response$choices$message.content\n      )\n    }\n  }\n  \n}\n\n# model responses are in JSON format\n#save.image(\"data/simulation_4.RData\")"
   }
 ]

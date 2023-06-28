@@ -10,7 +10,7 @@ abstract: "Simulation 2 gave GPT-3.5-Turbo the task of generating reaction time 
 date: 6-27-2023
 title-block-style: default
 aliases: ["simulation_2.html"]
-order: 2
+order: 3
 format:
   html:
     code-overflow: wrap

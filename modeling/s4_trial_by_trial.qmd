@@ -9,7 +9,7 @@ author:
 abstract: "Simulation 4 approaches the simulation using a modified trial-by-trial prompt structure. Previous simulations sent a large prompt containing all of the trials. A frequent problem was the model returned invalid JSON results. The refactored approach here may help address that problem."
 date: 6-28-2023
 title-block-style: default
-order: 4
+order: 5
 format:
   html:
     code-overflow: wrap
