@@ -1,13 +1,13 @@
 ---
-title: "Simulation 2: Stroop instructions"
+title: "Simulation 3: Proportion congruent"
 author:
   - name: Matthew J. C. Crump
     orcid: 0000-0002-5612-0090
     email: mcrump@brooklyn.cuny.edu
     affiliations:
       - name: Brooklyn College of CUNY
-description: "Simulation 2 tasks gpt-3.5-turbo with generating reaction time and accuracy data for a basic Stroop task presented in the form of text prompts. The major change from simulation 1 is to determine whether simulated accuracy and RT data can be modified through the prompt "
-date: 6-27-2023
+abstract: "Simulation 3 gave GPT-3.5-Turbo the task of generating reaction time and accuracy data for a basic Stroop task presented in the form of text prompts. The major difference from Simulation 1 was to include a list-wide proportion congruent manipulation."
+date: 6-28-2023
 title-block-style: default
 order: 2
 format:
@@ -17,10 +17,22 @@ format:
     code-summary: "Show the code"
 ---
 
-## Goal
+## State:
 
-Simulation 1 showed that several aspects of trial-to-trial performance in a Stroop task can be simulated by gpt-3.5-turbo. However, some aspects of performance were too good to be human. First, the model produced perfect responses on all trials. Second, the simulated reaction time values were too round, and usually ended in zero or five. Simulation 2 determines whether changes to the prompt instructions can deliver different patterns of results. The prompt will include instructions to perform with accuracy rates betweeen 85% to 95%. The prompt will include instructions to generate reaction time results that end in any number.
+Started
+Pilot data
 
+Half-baked. Successfully ran 14 simulated subjects, but requested 20. May need to refactor the code to allow for longer prompts
+
+## Recap
+
+Simulation one showed that GPT-3.5-Turbo can complete a Stroop task presented in the form of text prompts, and generate patterns of data that resemble human performance in several respects. For example, the model generated faster reaction times for congruent than incongruent items. The model generated reactions with inter and intra-subject variability. The model also performed with 100% accuracy, and chose implausibly round numbers. The second simulation varied the prompt to encourage more variability in accuracy and reaction time number generation. The reaction times appeared as if they were sampled from a continuous distribution. Accuracy rates for incongruent items varied across subjects. 
+
+In simulation 1 the model also generated reaction times that were consistent with congruency sequence effects. Specifically, the simulated Stroop effect from trials preceded by a congruent item was found to be larger than the Stroop effect from trials preceded by an incongruent item. The model was not given instructions regarding the congruency sequence, and it is somewhat intriguing that it generated data consistent with the presence of that effect. One possibility is that the models training corpus contains raw data from Stroop experiments, in which case it may be possible that the model generating data patterns for the present simulations in the style of existing training data.
+
+I don't know enough about how the model works, or the data it was trained on, to make strong claims or conclusions about these issues. Nevertheless, these issues are relevant to fleshing out concerns about using LLMs to spoof human data. In this case, the model appears to spoof multiple aspects of human performance in the Stroop task.
+
+The purpose of the simulation 3 was to determine whether the model will generate data consistent with list-wide proportion congruent effects, without being prompted to do so.
 
 ## Load libraries
 
@@ -36,13 +48,15 @@ library(xtable)
 
 ## Run model
 
-Notes: 25 simulated subjects. 24 Stroop trials each. 50% congruent/incongruent items made up from combinations of red, green, blue, and yellow. Each subject is given a different randomized order. 
+Notes: 20 simulated subjects. 32 Stroop trials each. First 10 subjects are given high proportion congruent, last 10 given low proportion congruent.
+
+Unlike the previous simulations, each subject is given a different randomized order. 
 
 The new prompt is shown in the code.
 
-Timing it this time. Started at 3:10. Took about 14 minutes.
-
 Used default params for gpt-3.5-turbo from the openai library.
+
+**Problems:** This code produced 14 valid JSON files out of 20. 
 
 ```{r, eval=FALSE}
 # use the colors red, green, blue, and yellow
@@ -67,11 +81,6 @@ incongruent_items <- c("The word red printed in the color blue",
                        "The word green printed in the color blue",
                        "The word green printed in the color yellow")
 
-# generate 50% congruent and 50% incongruent trials
-# 12 each (congruent and incongruent)
-trials <- sample(c(rep(congruent_items,3),incongruent_items))
-
-
 #set up variables to store data
 all_sim_data <- tibble()
 gpt_response_list <- list()
@@ -80,8 +89,22 @@ gpt_response_list <- list()
 # submit a query to open ai using the following prompt
 # note: responses in JSON format are requested
 
-for(i in 1:25){
+for(i in 1:20){
   print(i)
+  
+  # generate 50% congruent and 50% incongruent trials
+  # 12 each (congruent and incongruent)
+  hpc_trials <-  sample(c(rep(congruent_items,3*2),sample(incongruent_items,8)))
+  lpc_trials <-  sample(c(rep(congruent_items,2),rep(incongruent_items,2)))
+  
+  # choose proportion congruent based on subject number
+  if (i <= 10) {
+    trials <- hpc_trials
+    proportion_congruent <- "high"
+  } else {
+    trials <- lpc_trials
+    proportion_congruent <- "low"
+  }
   
   gpt_response <- create_chat_completion(
    model = "gpt-3.5-turbo",
@@ -92,7 +115,7 @@ for(i in 1:25){
        list("role" = "assistant",
             "content" = "OK, I am ready."),
        list("role" = "user",
-           "content" = paste("Consider the following trials of a Stroop task where you are supposed to identify the ink-color of the word as quickly and accurately as possible.","-----", paste(1:24, trials, collapse="\n") , "-----",'This is a simulated Stroop task. You will be shown a Stroop item in the form of a sentence. The sentence will describe a word presented in a particular ink-color. Your task is to identify the ink-color of the word as quickly and accurately as a human participant would. Your simulated accuracy should be between 80 and 95 percent accurate. Your simulated reaction times should look like real human data and end in different numbers. Put the simulated identification response and reaction time into a JSON array using this format: [{"trial": "trial number, integer", "word": "the name of the word, string","color": "the color of the word, string","response": "the simulated identification response, string","reaction_time": "the simulated reaction time, milliseconds an integer"}].', sep="\n")
+           "content" = paste("Consider the following trials of a Stroop task where you are supposed to identify the ink-color of the word as quickly and accurately as possible.","-----", paste(1:32, trials, collapse="\n") , "-----",'This is a simulated Stroop task. You will be shown a Stroop item in the form of a sentence. The sentence will describe a word presented in a particular ink-color. Your task is to identify the ink-color of the word as quickly and accurately as a human participant would. Your simulated reaction times should look like real human data and end in different numbers. Put the simulated identification response and reaction time into a JSON array using this format: [{"trial": "trial number, integer", "word": "the name of the word, string","color": "the color of the word, string","response": "the simulated identification response, string","reaction_time": "the simulated reaction time, milliseconds an integer"}].', sep="\n")
            
        )
    )
@@ -109,8 +132,10 @@ for(i in 1:25){
     sim_data <- jsonlite::fromJSON(gpt_response$choices$message.content)
     
     if(sum(names(sim_data) == c("trial","word","color","response","reaction_time")) == 5) {
+      
       sim_data <- sim_data %>%
-        mutate(sim_subject = i)
+        mutate(sim_subject = i,
+               proportion_congruent = proportion_congruent)
   
       all_sim_data <- rbind(all_sim_data,sim_data)
     }
@@ -119,25 +144,27 @@ for(i in 1:25){
 }
 
 # model responses are in JSON format
-save.image("data/simulation_2.RData")
+save.image("data/simulation_3.RData")
 ```
 
 
 ## Analysis
 
 ```{r}
-load(file = "data/simulation_2.RData")
+load(file = "data/simulation_3.RData")
 ```
 
-The LLM occasionally returns invalid JSON. The simulation ran 25 times, but still need to compute the total number of valid simulated subjects. 
+The LLM occasionally returns invalid JSON. The simulation ran 20 times.
 
 ```{r}
 total_subjects <- length(unique(all_sim_data$sim_subject))
 ```
 
-There were `r total_subjects` out of 25 valid simulated subjects. 
+There were `r total_subjects` out of 20 valid simulated subjects. 
 
 ### Reaction time analysis
+
+This analysis has too few simulated subjects to be meaningful.
 
 ```{r}
 # get mean RTs in each condition for each subject
@@ -147,18 +174,12 @@ rt_data_subject_congruency <- all_sim_data %>%
   mutate(accuracy = case_when(response == color ~ TRUE,
                               response != color ~ FALSE)) %>%
   filter(accuracy == TRUE) %>%
-  group_by(congruency,sim_subject) %>%
+  group_by(proportion_congruent,congruency,sim_subject) %>%
   summarize(mean_rt = mean(reaction_time), .groups = "drop")
-
-# Compute difference scores for each subject
-rt_data_subject_stroop <- rt_data_subject_congruency %>%
-  pivot_wider(names_from = congruency,
-              values_from = mean_rt) %>%
-  mutate(Stroop_effect = incongruent-congruent)
 
 # make plots
 
-F1A <- ggplot(rt_data_subject_congruency, aes(x = congruency,
+ggplot(rt_data_subject_congruency, aes(x = congruency,
                                        y = mean_rt))+
   geom_violin()+
   stat_summary(fun = "mean",
@@ -167,30 +188,13 @@ F1A <- ggplot(rt_data_subject_congruency, aes(x = congruency,
   geom_point()+
   theme_classic(base_size=15)+
   ylab("Mean Simulated Reaction Time") +
-  ggtitle("A")
+  facet_wrap(~proportion_congruent)
 
-F1B <- ggplot(rt_data_subject_stroop, aes(x = ' ',
-                                   y = Stroop_effect))+
-  geom_violin()+
-  stat_summary(fun = "mean",
-               geom = "crossbar",
-               color = "red")+
-  geom_point()+
-  theme_classic(base_size=15)+
-  ylab("Simulated Stroop Effects")+
-  xlab("Incongruent - Congruent")+
-  ggtitle("B")
-
-F1A + F1B
 ```
-
-Figure 1A shows simulated mean reaction times for congruent and incongruent trials. Individual dots show means at the level of simulated subjects. Figure 1B shows the overall mean Stroop effect, and individual mean Stroop effects for each simulated subject. The results are similar to Simulatoin 1.
 
 ### A closer look at reaction times
 
-The new prompt included the instructions: "Your simulated accuracy should be between 80 and 95 percent accurate. Your simulated reaction times should look like real human data and end in different numbers." A major question for simulation 2 was to determine if this prompt would cause the model to generate less round numbers.
-
-The histogram looks more like an ex-Gaussian than simulation 1.
+As with previous simulations, the reaction times look sort of Ex-Gaussian.
 
 
 ```{r}
@@ -210,7 +214,7 @@ ggplot(all_sim_data, aes(x=reaction_time))+
   xlab("Simulated Reaction Times")
 ```
 
-The following histogram is a count of the ending digits for each of the simulated reaction times generated by gpt-3.5-turbo. The new prompt was effective in causing the model to propuce numbers with all possible endings. 
+The model did produce simulated reaction times that ended in all possible digits. At the same time, it shows a preference for values ending in zero.
 
 ```{r}
 all_sim_data <- all_sim_data %>%
@@ -226,7 +230,6 @@ ggplot(all_sim_data, aes(x=ending_digit))+
 
 ## Accuracy Analysis
 
-Another major question was whether the new prompt would cause less than perfect accuracy on all trials. The model remained 100% accurate on congruent trials, but produced a variety of accuracy rates for incongruent trials.
 
 ```{r}
 # report accuracy data
@@ -236,7 +239,7 @@ accuracy_data_subject <- all_sim_data %>%
   mutate(accuracy = case_when(response == color ~ TRUE,
                               response != color ~ FALSE)) %>%
   group_by(congruency,sim_subject) %>%
-  summarize(proportion_correct = sum(accuracy)/12, .groups = "drop")
+  summarize(proportion_correct = mean(accuracy), .groups = "drop")
 
 ggplot(accuracy_data_subject, aes(x = congruency,
                                   y = proportion_correct))+
@@ -251,10 +254,22 @@ ggplot(accuracy_data_subject, aes(x = congruency,
 
 ```
 
-The accuracy rates for incongruent items have a clear stepped, almost equal interval like pattern. The prompt succeeded in producing imperfect accuracy rates, but the model did not comply with the instruction to produce accuracy rates between 80-95 percent correct.
-
 ## Discussion
 
-The purpose of simulation 2 was to determine if simple changes to the instruction would influence the simulated results, such as producing more "random" looking reaction times, and more inaccurate responses. The reaction times in simulation 2 looked more "random" and ex-Gaussian than the reaction times in Simulation 1. The accuracy rates remained perfect for congruent items, but not for incongruent items, which showed a wide range of accuracy rates.
+This simulation used a slightly longer prompt than the first two simulation. The first two simulations had 24 simulated trials, and this one had 32. I also tried a version with 48 trials per subject, but received 502 gateway errors from the API. I'm not sure whether the prompt was too long, or the expected response was too long.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

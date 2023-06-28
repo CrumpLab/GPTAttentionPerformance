@@ -6,14 +6,14 @@ author:
     email: mcrump@brooklyn.cuny.edu
     affiliations:
       - name: Brooklyn College of CUNY
-description: "A computational modeling project examining whether or not a GPT model can simulate human performance in classic attention and performance tasks."
+abstract: "A computational modeling project examining whether or not a GPT model can simulate human performance in classic attention and performance tasks."
 date: 6-27-2023
 title-block-style: default
 ---
 
 ## Project Information
 
-The purpose of this project is to assess capabilities of LLMs, such as OpenAI's gpt models, to simulate behavioral data from classic attention and performance tasks in cognitive psychology, like the Stroop task.
+The purpose of this project is to assess capabilities of LLMs, such as OpenAI's GPT models, to simulate behavioral data from classic attention and performance tasks in cognitive psychology, like the Stroop task.
 
 Status:
 

@@ -6,7 +6,7 @@ author:
     email: mcrump@brooklyn.cuny.edu
     affiliations:
       - name: Brooklyn College of CUNY
-description: "Scratchpad for thinking through the project."
+abstract: "Scratchpad for thinking through the project."
 date: 6-27-2023
 title-block-style: default
 order: 1

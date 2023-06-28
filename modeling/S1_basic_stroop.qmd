@@ -6,10 +6,11 @@ author:
     email: mcrump@brooklyn.cuny.edu
     affiliations:
       - name: Brooklyn College of CUNY
-description: "Simulation 1 tasks gpt-3.5-turbo with generating reaction time and accuracy data for a basic Stroop task presented in the form of text prompts."
+abstract: "Simulation 1 gave GPT-3.5-Turbo the task of generating reaction time and accuracy data for a basic Stroop task presented in the form of text prompts."
 date: 6-27-2023
 title-block-style: default
 order: 2
+aliases: ["simulation_1.html"]
 format:
   html:
     code-overflow: wrap
@@ -19,7 +20,7 @@ format:
 
 ## Goal
 
-The goal of simulation 1 is to determine whether or not gpt-3.5-turbo is capable of simulating performance in a standard Stroop task. To accomplish this, the model will be given a text-based Stroop task where it will be shown a word presented in a particular color. On each trial, the model will be instructed to respond as quickly and accurately as possible to identify the color. The response will include the name of the color and a simulated reaction time in milliseconds. To facilitate easy analysis in R, the model is instructed to return results in JSON format.
+The goal of simulation 1 is to determine whether or not GPT-3.5-turbo is capable of simulating performance in a standard Stroop task. To accomplish this, the model will be given a text-based Stroop task where it will be shown a word presented in a particular color. On each trial, the model will be instructed to respond as quickly and accurately as possible to identify the color. The response will include the name of the color and a simulated reaction time in milliseconds. To facilitate easy analysis in R, the model is instructed to return results in JSON format.
 
 
 ## Load libraries
@@ -36,7 +37,9 @@ library(xtable)
 
 ## Run model
 
-Notes: 25 simulated subjects. 24 Stroop trials each. 50% congruent/incongruent items made up from combinations of red, green, blue, and yellow. Each subject is given a different randomized order. Instructions are minimal: to identify the color as quickly and accurately as possible.
+Notes: 25 simulated subjects. 24 Stroop trials each. 50% congruent/incongruent items made up from combinations of red, green, blue, and yellow. Instructions are minimal: to identify the color as quickly and accurately as possible.
+
+Additional note: I had the original intention to randomize the trial list for each simulated subject. However, the code below randomized the list once, and gave all simulated subjects the same list.
 
 Takes about 10 minutes or so run, maybe less, didn't time it.
 
@@ -182,7 +185,7 @@ F1B <- ggplot(rt_data_subject_stroop, aes(x = ' ',
 F1A + F1B
 ```
 
-Figure 1A shows simulated mean reaction times for congruent and incongruent trials. Individual dots show means at the level of simulated subjects. Figure 1B shows the overall mean Stroop effect, and individual mean Stroop effects for each simulated subject. 22 of the 23 simulated subjects showed positive Stroop effects, and one simulated subject showed a reverse Stroop effect.
+Figure 1A shows simulated mean reaction times for congruent and incongruent trials. Individual dots show means at the level of simulated subjects. Figure 1B shows the overall mean Stroop effect and individual mean Stroop effects for each simulated subject. 22 of the 23 simulated subjects showed positive Stroop effects, and one simulated subject showed a reverse Stroop effect.
 
 The major take home point is that the LLM is capable of generating data that have grossly similar characteristics to human reaction time data in the Stroop task. First, the model produces faster responses to congruent than incongruent trials. Second, the model generates data patterns stochastically, and individual simulated subjects showed different patterns of reaction time data. The range of reaction time values is not outside the range found in studies with human participants. 
 
@@ -321,7 +324,7 @@ In this simulation of 23 subjects, the mean Stroop effect was larger for trials 
 
 ## Discussion
 
-Gpt-3.5-turbo produced simulated data that approximated human behavior in several respects, including producing standard Stroop effects, and even a congruency sequence effect. The accuracy data was too perfect, and the reaction time data was too round (most numbers ended in zeros.)
+GPT-3.5-turbo produced simulated data that approximated human behavior in several respects, including producing standard Stroop effects, and even a congruency sequence effect. The accuracy data was too perfect, and the reaction time data was too round (most numbers ended in zeros.)
 
 General caveats. This code can be re-run, but the result is not completely reproducible because the LLM is stochastic and will return different answers each time. 
 

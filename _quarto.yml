@@ -15,6 +15,7 @@ website:
   google-analytics: "G-N737DQ9WMT"
   search: true
   navbar:
+    background: light
     left:
       - href: index.qmd
         text: Home
@@ -30,6 +31,7 @@ website:
 
 format:
   html:
-    theme: minty
-    css: styles.css
+    theme:
+      - cosmo
+      - custom.scss
     toc: true
