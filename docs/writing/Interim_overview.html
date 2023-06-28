@@ -225,6 +225,9 @@ gtag('config', 'G-N737DQ9WMT', { 'anonymize_ip': true});
   <li><a href="#what-happened-so-far" id="toc-what-happened-so-far" class="nav-link" data-scroll-target="#what-happened-so-far">What happened so far?</a></li>
   <li><a href="#simulation-1-basic-stroop" id="toc-simulation-1-basic-stroop" class="nav-link" data-scroll-target="#simulation-1-basic-stroop">Simulation 1: Basic Stroop</a></li>
   <li><a href="#simulation-2-stroop-instructions" id="toc-simulation-2-stroop-instructions" class="nav-link" data-scroll-target="#simulation-2-stroop-instructions">Simulation 2: Stroop instructions</a></li>
+  <li><a href="#simulations-3-to-6-proportion-congruent-and-refactoring-the-code-for-longer-prompts" id="toc-simulations-3-to-6-proportion-congruent-and-refactoring-the-code-for-longer-prompts" class="nav-link" data-scroll-target="#simulations-3-to-6-proportion-congruent-and-refactoring-the-code-for-longer-prompts">Simulations 3 to 6: Proportion congruent and refactoring the code for longer prompts</a></li>
+  <li><a href="#simulation-7-and-8-stroop-task-switching" id="toc-simulation-7-and-8-stroop-task-switching" class="nav-link" data-scroll-target="#simulation-7-and-8-stroop-task-switching">Simulation 7 and 8: Stroop Task-switching</a></li>
+  <li><a href="#thats-it-for-now" id="toc-thats-it-for-now" class="nav-link" data-scroll-target="#thats-it-for-now">That’s it for now</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/CrumpLab/GPTAttentionPerformance/blob/main/writing/Interim_overview.qmd" class="toc-action">View source</a></p><p><a href="https://github.com/CrumpLab/GPTAttentionPerformance/edit/main/writing/Interim_overview.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/CrumpLab/GPTAttentionPerformance/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -283,7 +286,7 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This project and this summary are draft in progress works that may change at any time until this project is completed.</p>
+<p>This project and summary are works in progress and may be subject to changes until the project is completed.</p>
 </div>
 </div>
 <section id="motivation-why-am-i-doing-this" class="level2">
@@ -292,18 +295,18 @@ Tip
 <p><a href="https://crumplab.com/blog/771_GPT_Stroop/" class="uri">https://crumplab.com/blog/771_GPT_Stroop/</a></p>
 <p>Elements of the motivation include:</p>
 <ul>
-<li><p>Personal curiosity, and an excuse to try programmatically interacting with the OpenAI API.</p></li>
-<li><p>General concerns about LLMs being used to spoof human data in online situations, such as recent reports that mturk workers are using LLMs to respond to HITs. I’ve noticed similar behavior in some of my own mturk requests.</p></li>
-<li><p>Wondering whether an LLM could fake data in the tasks I typically run online. These tasks are usually programmed in JsPsych, and require speeded identification responses on a trial-by-trial basis.</p></li>
+<li><p>Personal curiosity and an excuse to try programmatically interacting with the OpenAI API.</p></li>
+<li><p>General concerns about LLMs being used to spoof human data in online situations, such as recent reports that MTurk workers are using LLMs to respond to HITs. I’ve noticed similar behavior in some of my own MTurk requests.</p></li>
+<li><p>Wondering whether an LLM could fake data in the tasks I typically run online. These tasks are usually programmed in JsPsych and require speeded identification responses on a trial-by-trial basis.</p></li>
 </ul>
 </section>
 <section id="what-is-this-project" class="level2">
 <h2 class="anchored" data-anchor-id="what-is-this-project">What is this project?</h2>
-<p>In this project I am asking general questions about whether large language models, such as OpenAI’s gpt-3.5-turbo, can spoof human-like data in attention and performance tasks. The simulations so far have employed a text-based version of the Stroop task.</p>
-<p>The figure below shows example Stroop stimuli that might be presented to people. The task is typically to name the ink-color of the word, and avoid naming the actual word. Responses are typically faster for congruent items– where the color matches the word– than incongruent item types– where the color mismatches the word.</p>
+<p>In this project I am asking general questions about whether large language models, such as OpenAI’s gpt-3.5-turbo, can spoof human-like data in attention and performance tasks. The simulations so far use a text-based version of the Stroop task.</p>
+<p>The figure below shows examples of Stroop stimuli that might be presented to people. The task typically involves naming the ink color of the word and avoiding naming the actual word. Responses are usually faster for congruent items, where the color matches the word, compared to incongruent item types, where the color mismatches the word.</p>
 <p><img src="https://crumplab.com/blog/771_GPT_Stroop/Stroop.png" class="quarto-discovered-preview-image img-fluid"></p>
 <p>The general question for this project was, what happens if I ask a GPT model to perform a Stroop task?</p>
-<p>I’m using a number of tools that greatly facilitate my ability to ask this kind of question. These include, R, an R library for interfacing with the OpenAI API, and the ability of GPT models to return their responses in JSON (most of the time), which makes it easy to analyse simulated responses in R.</p>
+<p>I’m using a number of tools that greatly facilitate my ability to ask this kind of question. These include R, an R library for interfacing with the OpenAI API, and the ability of GPT models to return their responses in JSON (most of the time), which makes it easy to analyze simulated responses in R.</p>
 <p>The details of the simulations run so far can be found on their respective pages in the modeling section. The approach is basically to prompt the model that it is about to perform a Stroop task. I provide trial-by-trial text saying what kind of item is presented on each trial (e.g., the word blue is written in the color red), and I ask the model to identify the color, and provide a simulated reaction time in milliseconds.</p>
 </section>
 <section id="what-happened-so-far" class="level2">
@@ -324,17 +327,42 @@ Tip
 <p>The model produced valid JSON files that I could read into R 23 out of 25 times. The simulated data is in the form of a data frame with responses and reaction times for every trial, for each simulated subject. I read the simulated data into R, then analysed the data to determine whether or not the LLM would produce a Stroop effect. Specifically, would it generate fake reaction times that were on average faster for congruent than incongruent trials?</p>
 <p>The answer is yes, these are the results from the model. In addition to simulating faster mean reaction times for congruent than incongruent items, it also produced different results for each simulated subject. These aspects of the data were not explicitly prompted, or at least I didn’t think I explicitly prompted them.</p>
 <p><img src="https://crumplab.com/GPTAttentionPerformance/modeling/S1_basic_stroop_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid"></p>
-<p>The model also generated really unrealistic numbers for reaction times at the level of individual trials. Almost all of the numbers were too round, they ended in 0 or 5, mostly 0. Also, the model was 100% accurate on all trials.</p>
-<p>A curious finding was that the model also produced a congruency sequence effect. A common finding in the Stroop literature is that Stroop effects are larger following congruent trials than incongruent trials. Information about this phenomena was not included in the prompt. Nevertheless, when I analyzed the data for the effect, it showed up:</p>
+<p>The model also generated really unrealistic numbers for reaction times at the level of individual trials. Almost all of the numbers were too rounded, as they ended in 0 or 5, mostly 0. Additionally, the model achieved 100% accuracy on all trials.</p>
+<p>A curious finding was that the model also produced a congruency sequence effect. A common finding in the Stroop literature is that Stroop effects are larger following congruent trials than incongruent trials. Information about this phenomenon was not included in the prompt. Nevertheless, when I analyzed the data for the effect, it showed up.</p>
 <p><img src="https://crumplab.com/GPTAttentionPerformance/modeling/S1_basic_stroop_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid"></p>
-<p>It’s possible this is a spurious finding, I don’t know. The lack of compuational reproducibility in this kind of modeling work is very frustrating. It’s possible that the model was trained on raw data from human Stroop experiments, so when it produced data for this prompt it used patterns that were available from the training set to generate simulated data. Or is that possible? I don’t know enough about how these models work to answer the question.</p>
+<p>It’s possible that this is a spurious finding, I don’t know. The lack of computational reproducibility in this kind of modeling work is very frustrating. It’s possible that the model was trained on raw data from human Stroop experiments, so when it produced data for this prompt, it used patterns that were available from the training set to generate simulated data. Or is that possible? I don’t know enough about how these models work to answer the question.</p>
 </section>
 <section id="simulation-2-stroop-instructions" class="level2">
 <h2 class="anchored" data-anchor-id="simulation-2-stroop-instructions">Simulation 2: Stroop instructions</h2>
 <p>This simulation includes some additional encouragement in the prompt to generate more realistic reaction times (not always ending in 0), and to make mistakes on some trials. Otherwise, it was similar to the first simulation. Again, it produces a Stroop effect with inter and intra-individual variability in reaction times.</p>
 <p><img src="https://crumplab.com/GPTAttentionPerformance/modeling/S2_stroop_instructions_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid"></p>
-<p>This time the reaction times did not all in 0, and collectively they even looked similar to human reaction time distributions (see simulation 2). The accuracy data was perfect for congruent trials, but mistakes were inserted on incongruent trials.</p>
-<p>The take-home message was that changing the prompt did cause the model to produce reaction times and accuracy rates that conformed to the instructions.</p>
+<p>This time the reaction times did not all end in 0, and collectively they even looked similar to human reaction time distributions (see simulation 2). The accuracy data was perfect for congruent trials, but mistakes were inserted on incongruent trials as instructed.</p>
+<p>The take-home message was that changing the prompt did cause the model to produce reaction times and accuracy rates that conformed to the prompt instructions.</p>
+</section>
+<section id="simulations-3-to-6-proportion-congruent-and-refactoring-the-code-for-longer-prompts" class="level2">
+<h2 class="anchored" data-anchor-id="simulations-3-to-6-proportion-congruent-and-refactoring-the-code-for-longer-prompts">Simulations 3 to 6: Proportion congruent and refactoring the code for longer prompts</h2>
+<p>The first simulation showed that GPT generated both a typical Stroop effect and a congruency sequence effect, even though it wasn’t given information about how human performance depends on trial-to-trial aspects of the task.</p>
+<p>The size of the Stroop effect is also known to depend on the relative proportion of congruent items in a list. The Stroop effect is typically larger for lists that contain a high proportion of congruent items compared to lists that contain a low proportion of congruent items.</p>
+<p>Simulation 3 was similar to the first simulation, with one key difference. It involved providing certain simulated subjects a set of trials containing a high proportion of congruent items, while others received a set of trials with a low proportion of congruent items. However, this simulation encountered several problems, as it frequently generated invalid JSON that couldn’t be analyzed. One of the contributing factors was the excessive length and token usage in the prompt, surpassing the model’s allowable limit.</p>
+<p>Simulations 4 and 5 were attempts to refactor the code to allow for longer prompts that returned results that could be analyzed. Simulation 5 worked quite well, and the approach used there was also employed in simulation 6.</p>
+<p>Simulation 6 gave some subjects a high proportion of congruent list items, and other subjects a low proportion of congruent list items. Interestingly, the model appeared to show the standard list-wide proportion congruent effect, even though the prompt mentioned nothing about this. The figure shows a larger simulated Stroop effect for the high proportion congruent conditions than the low proportion congruent conditions.</p>
+<p><img src="https://crumplab.com/GPTAttentionPerformance/modeling/S6_stroop_pc_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid"></p>
+</section>
+<section id="simulation-7-and-8-stroop-task-switching" class="level2">
+<h2 class="anchored" data-anchor-id="simulation-7-and-8-stroop-task-switching">Simulation 7 and 8: Stroop Task-switching</h2>
+<p>I thought it was interesting that GPT produced a congruency sequence effect and a proportion congruent effect. I wondered how many other known effects it would produce in addition to the main Stroop effect, which is still very commonly observed in human data.</p>
+<p>Simulation 7 involved a task-switching procedure. In each trial, the model was randomly prompted to identify either the color or the word from a Stroop stimulus. Typically, human participants would exhibit quicker word naming responses than color naming responses, along with exhibiting smaller Stroop effects on word naming trials compared to color naming trials. However, the model did not demonstrate faster word naming responses compared to color naming responses, nor did it generate smaller Stroop effects on word naming trials compared to color naming trials.</p>
+<p>Humans typically show faster responses on task-repeat than task-switch trials. The model did not show this task switching effect either.</p>
+<p>The figure shows the data from the model. The RTs for the identify word condition should have been much faster, and the difference between congruent and incongruent much smaller.</p>
+<p><img src="https://crumplab.com/GPTAttentionPerformance/modeling/S7_Stroop_task_switching_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid"></p>
+<p>Simulation 8 repeated the previous simulation but gave prompts that were more explicit about how the model should behave. The relevant additions are in bold.</p>
+<hr>
+<p>You are a simulated participant in a human cognition experiment. Complete the task as instructed and record your simulated responses in a JSON file. Your task is to simulate human performance in a word and color naming task. You will be given the task in the form a JSON object. The JSON object contains the word and color presented on each trial. Your task is to read the task instruction for each trial. If the instruction is to name the color, then identify the color as quickly and accurately as a human would. <strong>If the instruction is to name the word, then identify the word as quickly and accurately as a human would. Humans are much faster at naming words than colors. Humans show much larger Stroop effects for naming colors, and very small or nonexistent Stroop effects when naming words. When humans repeat the same task from trial to trial they are faster and more accurate compared to when they switch tasks from trial to trial. When you simulate data make sure it conforms to how humans would perform this task.</strong> The JSON object contains the symbol ? in locations where you will generate simulated responses. You will generate a simulated identification response, and a simulated reaction time for each trial. Put the simulated identification response and reaction time into a JSON array using this format…(see the code for details)</p>
+<hr>
+<p>However, in this case, the explicit instructions didn’t seem to change the model’s simulated results. It showed no difference between color and word-naming. And, it didn’t show a task-switching effect either.</p>
+</section>
+<section id="thats-it-for-now" class="level2">
+<h2 class="anchored" data-anchor-id="thats-it-for-now">That’s it for now</h2>
 
 
 </section>
