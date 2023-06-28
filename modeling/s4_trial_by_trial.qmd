@@ -1,0 +1,148 @@
+---
+title: "Pilot Simulation 4: Trial-by-trial"
+author:
+  - name: Matthew J. C. Crump
+    orcid: 0000-0002-5612-0090
+    email: mcrump@brooklyn.cuny.edu
+    affiliations:
+      - name: Brooklyn College of CUNY
+abstract: "Simulation 4 approaches the simulation using a modified trial-by-trial prompt structure. Previous simulations sent a large prompt containing all of the trials. A frequent problem was the model returned invalid JSON results. The refactored approach here may help address that problem."
+date: 6-28-2023
+title-block-style: default
+order: 4
+format:
+  html:
+    code-overflow: wrap
+    code-fold: true
+    code-summary: "Show the code"
+---
+
+## State:
+
+Started. Seems to be working. Too slow to continue. 
+
+## Goals
+
+Simulations 1 - 3 package all of the instructions and task into one prompt, and request that the LLM produce responses to each trial in a JSON response object. Simulation 3 had the longest prompt so far, and the model returned several invalid JSON responses. The openai forums suggest that other users experience similar problems. One solution may be to improve the prompt. 
+
+This simulation pursues a different solution, which is to present the model with one trial at a time, and then ask the model to return a JSON object for each trial, one at a time. I already tried something like this in my blog post, and am going to try again and see what happens.
+
+This approach will likely also cause the whole process to take much longer than before.
+
+
+## Load libraries
+
+```{r}
+#| message: false
+#| warning: false
+library(tidyverse)
+library(openai)
+library(patchwork)
+library(xtable)
+```
+
+
+## Run model
+
+```{r, eval=FALSE}
+# use the colors red, green, blue, and yellow
+
+# four possible congruent items
+congruent_items <- c("The word red printed in the color red",
+                     "The word blue printed in the color blue",
+                     "The word yellow printed in the color yellow",
+                     "The word green printed in the color green")
+
+# four possible incongruent items
+incongruent_items <- c("The word red printed in the color blue",
+                       "The word red printed in the color green",
+                       "The word red printed in the color yellow",
+                       "The word blue printed in the color red",
+                       "The word blue printed in the color green",
+                       "The word blue printed in the color yellow",
+                       "The word yellow printed in the color red",
+                       "The word yellow printed in the color blue",
+                       "The word yellow printed in the color green",
+                       "The word green printed in the color red",
+                       "The word green printed in the color blue",
+                       "The word green printed in the color yellow")
+
+# generate 50% congruent and 50% incongruent trials
+# 12 each (congruent and incongruent)
+trials <- sample(c(rep(congruent_items,3),incongruent_items))
+
+
+#set up variables to store data
+sim_data <- tibble()
+all_sim_data <- tibble()
+gpt_response_list <- list()
+
+# starting message
+
+sim_task <- list(
+       list("role" = "system",
+           "content" = "You are a simulated participant in a human cognition experiment. Your task is to respond as quickly and accurately as possible, and record your simulated responses in JSON. The JSON object should only contain the results for the current trial."),
+       list("role" = "assistant",
+           "content" = "OK, what are the instructions for this task?"),
+       list("role" = "user",
+           "content" = 'This is a simulated Stroop task. You will be shown a Stroop item in the form of a sentence. The sentence will describe a word presented in a particular ink-color. Your task is to identify the ink-color of the word as quickly and accurately as possible. Put the simulated identification response and reaction time into a JSON array using this format: [{"trial": "trial number, integer", "word": "the name of the word, string","color": "the color of the word, string","response": "the simulated identification response, string","reaction_time": "the simulated reaction time, milliseconds an integer"}].'),
+       list("role" = "assistant",
+           "content" = "OK, show the next trial.")
+       )
+
+task_names <- c("trial","word","color","response","reaction_time")
+
+for(i in 1:10){
+  
+  print(i)
+  
+  # add trial to list of messages
+  sim_task[[length(sim_task)+1]] <- list(
+    "role" = "user",
+    "content" = trials[i]
+  )
+  
+  # get response
+  gpt_response <- create_chat_completion(
+   model = "gpt-3.5-turbo",
+   messages = sim_task
+   )
+  
+  #validate json and proceed
+  
+  if(jsonlite::validate(as.character(gpt_response$choices$message.content)) == TRUE){
+    
+    # convert JSON to tibble
+    trial_tibble <- jsonlite::fromJSON(gpt_response$choices$message.content)
+    print(trial_tibble)
+    
+    # check if tibble has correct names
+    if(all(task_names == names(trial_tibble))){
+      
+      #add new row to sim
+      sim_data <- rbind(sim_data,trial_tibble)
+      
+      ## response to to message list
+      sim_task[[length(sim_task)+1]] <- list(
+        "role" = gpt_response$choices$message.role,
+        "content" = gpt_response$choices$message.content
+      )
+    }
+  }
+  
+}
+
+# model responses are in JSON format
+#save.image("data/simulation_4.RData")
+```
+
+
+
+
+
+
+
+
+
+
+

@@ -229,5 +229,40 @@
     "title": "Simulating Attention and Performance tasks with an LLM",
     "section": "",
     "text": "This is a website for a cognitive psychology research project. The aim of this website is to create and share reproducible research assets throughout the project lifespan. This repository is built with quarto. Source code is available from the github repository for this project."
+  },
+  {
+    "objectID": "modeling/s4_trial_by_trial.html",
+    "href": "modeling/s4_trial_by_trial.html",
+    "title": "Pilot Simulation 4: Trial-by-trial",
+    "section": "",
+    "text": "Started. Seems to be working. Too slow to continue."
+  },
+  {
+    "objectID": "modeling/s4_trial_by_trial.html#state",
+    "href": "modeling/s4_trial_by_trial.html#state",
+    "title": "Pilot Simulation 4: Trial-by-trial",
+    "section": "",
+    "text": "Started. Seems to be working. Too slow to continue."
+  },
+  {
+    "objectID": "modeling/s4_trial_by_trial.html#goals",
+    "href": "modeling/s4_trial_by_trial.html#goals",
+    "title": "Pilot Simulation 4: Trial-by-trial",
+    "section": "Goals",
+    "text": "Goals\nSimulations 1 - 3 package all of the instructions and task into one prompt, and request that the LLM produce responses to each trial in a JSON response object. Simulation 3 had the longest prompt so far, and the model returned several invalid JSON responses. The openai forums suggest that other users experience similar problems. One solution may be to improve the prompt.\nThis simulation pursues a different solution, which is to present the model with one trial at a time, and then ask the model to return a JSON object for each trial, one at a time. I already tried something like this in my blog post, and am going to try again and see what happens.\nThis approach will likely also cause the whole process to take much longer than before."
+  },
+  {
+    "objectID": "modeling/s4_trial_by_trial.html#load-libraries",
+    "href": "modeling/s4_trial_by_trial.html#load-libraries",
+    "title": "Pilot Simulation 4: Trial-by-trial",
+    "section": "Load libraries",
+    "text": "Load libraries\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(openai)\nlibrary(patchwork)\nlibrary(xtable)"
+  },
+  {
+    "objectID": "modeling/s4_trial_by_trial.html#run-model",
+    "href": "modeling/s4_trial_by_trial.html#run-model",
+    "title": "Pilot Simulation 4: Trial-by-trial",
+    "section": "Run model",
+    "text": "Run model\n\n\nShow the code\n# use the colors red, green, blue, and yellow\n\n# four possible congruent items\ncongruent_items &lt;- c(\"The word red printed in the color red\",\n                     \"The word blue printed in the color blue\",\n                     \"The word yellow printed in the color yellow\",\n                     \"The word green printed in the color green\")\n\n# four possible incongruent items\nincongruent_items &lt;- c(\"The word red printed in the color blue\",\n                       \"The word red printed in the color green\",\n                       \"The word red printed in the color yellow\",\n                       \"The word blue printed in the color red\",\n                       \"The word blue printed in the color green\",\n                       \"The word blue printed in the color yellow\",\n                       \"The word yellow printed in the color red\",\n                       \"The word yellow printed in the color blue\",\n                       \"The word yellow printed in the color green\",\n                       \"The word green printed in the color red\",\n                       \"The word green printed in the color blue\",\n                       \"The word green printed in the color yellow\")\n\n# generate 50% congruent and 50% incongruent trials\n# 12 each (congruent and incongruent)\ntrials &lt;- sample(c(rep(congruent_items,3),incongruent_items))\n\n\n#set up variables to store data\nsim_data &lt;- tibble()\nall_sim_data &lt;- tibble()\ngpt_response_list &lt;- list()\n\n# starting message\n\nsim_task &lt;- list(\n       list(\"role\" = \"system\",\n           \"content\" = \"You are a simulated participant in a human cognition experiment. Your task is to respond as quickly and accurately as possible, and record your simulated responses in JSON. The JSON object should only contain the results for the current trial.\"),\n       list(\"role\" = \"assistant\",\n           \"content\" = \"OK, what are the instructions for this task?\"),\n       list(\"role\" = \"user\",\n           \"content\" = 'This is a simulated Stroop task. You will be shown a Stroop item in the form of a sentence. The sentence will describe a word presented in a particular ink-color. Your task is to identify the ink-color of the word as quickly and accurately as possible. Put the simulated identification response and reaction time into a JSON array using this format: [{\"trial\": \"trial number, integer\", \"word\": \"the name of the word, string\",\"color\": \"the color of the word, string\",\"response\": \"the simulated identification response, string\",\"reaction_time\": \"the simulated reaction time, milliseconds an integer\"}].'),\n       list(\"role\" = \"assistant\",\n           \"content\" = \"OK, show the next trial.\")\n       )\n\ntask_names &lt;- c(\"trial\",\"word\",\"color\",\"response\",\"reaction_time\")\n\nfor(i in 1:10){\n  \n  print(i)\n  \n  # add trial to list of messages\n  sim_task[[length(sim_task)+1]] &lt;- list(\n    \"role\" = \"user\",\n    \"content\" = trials[i]\n  )\n  \n  # get response\n  gpt_response &lt;- create_chat_completion(\n   model = \"gpt-3.5-turbo\",\n   messages = sim_task\n   )\n  \n  #validate json and proceed\n  \n  if(jsonlite::validate(as.character(gpt_response$choices$message.content)) == TRUE){\n    \n    # convert JSON to tibble\n    trial_tibble &lt;- jsonlite::fromJSON(gpt_response$choices$message.content)\n    print(trial_tibble)\n    \n    # check if tibble has correct names\n    if(all(task_names == names(trial_tibble))){\n      \n      #add new row to sim\n      sim_data &lt;- rbind(sim_data,trial_tibble)\n      \n      ## response to to message list\n      sim_task[[length(sim_task)+1]] &lt;- list(\n        \"role\" = gpt_response$choices$message.role,\n        \"content\" = gpt_response$choices$message.content\n      )\n    }\n  }\n  \n}\n\n# model responses are in JSON format\n#save.image(\"data/simulation_4.RData\")"
   }
 ]
