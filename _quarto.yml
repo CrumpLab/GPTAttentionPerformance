@@ -12,6 +12,7 @@ website:
   repo-url: https://github.com/CrumpLab/GPTAttentionPerformance
   repo-actions: [source, edit, issue]
   site-url: "https://crumplab.com/GPTAttentionPerformance"
+  google-analytics: "G-N737DQ9WMT"
   search: true
   navbar:
     left:
