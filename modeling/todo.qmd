@@ -53,36 +53,22 @@ Answer the following basic questions
 - [x] Does the model produce RTs that look like human subject RTs?
 - [x] Does the model produce additional Stroop phenomena without further prompting?
   - [x] Congruency sequence effect?
-  - [] Proportion Congruent effect?
+  - [x] Proportion Congruent effect?
 - [x] Can the instruction prompt be used to control how the model simulates performance.
   - [x] simulate 75% correct
   - [] simulate 50% correct
-  - [] simulate some long reaction times
-  - [] simulate a reverse Stroop effect.
+  - [x] simulate some long reaction times
+  - [x] simulate a reverse Stroop effect.
   - [] simulate proportion congruent effects
+  
+- [] simulate some other tasks
 
-## Simulations
-
-### Simulation 1: Basic Stroop
-
-25 simulated subjects. 24 trials each. 50% congruent/incongruent. Simple instruction prompt. Shows Stroop effects, and congruent sequence effects. RTs are too round. Accuracy is too good.
-
-### Simulation 2: Stroop Instructions
-
-Same as above, but change to prompt for more "random" RTs, and worse accuracy. This worked.
-
-### Simulation 3: Proportion congruent
-
-Give the model a low or high proportion congruent list. Don't say anything about high or low proportion congruent being an issue in the prompt. See if the model generates data that nevertheless show a proportion congruent effect.
-
-### Simulation 4: Reverse the task
-
-Have the model perform "word-reading" instead of "color-naming". This usually shows a much smaller Stroop. What does the model do?
-
-
-
-
-
+- [] Flanker task
+- [] Simon Task
+- [] SRT (Nissen & Bullemer)
+- [] Negative Priming
+- [] Inhibition of Return
+- [] SNARC effect
 
 
 
