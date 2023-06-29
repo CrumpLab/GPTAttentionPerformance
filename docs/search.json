@@ -670,5 +670,61 @@
     "title": "Project Scratchpad",
     "section": "Writing to do",
     "text": "Writing to do\n\ninterim overview\n[] consider in more detail what I’m trying to accomplish here and whether this project turns into something more formal than a shared repo on github\n[] Things that make me go hmmm.\n\nthe modeling work is not reproducible\nopenAI says the new default is that data sent through the API will not be used to train models, but this is an opt-in option\nI did not opt in, but if someone else did and re-ran this kind of code with feedback to alter the model resposnes, then the results from this kind of work would change\nUnclear what happens with newer models like GPT 4"
+  },
+  {
+    "objectID": "modeling/S11_SNARC.html",
+    "href": "modeling/S11_SNARC.html",
+    "title": "Simulation 11: SNARC effect",
+    "section": "",
+    "text": "Started. Finished."
+  },
+  {
+    "objectID": "modeling/S11_SNARC.html#state",
+    "href": "modeling/S11_SNARC.html#state",
+    "title": "Simulation 11: SNARC effect",
+    "section": "",
+    "text": "Started. Finished."
+  },
+  {
+    "objectID": "modeling/S11_SNARC.html#recap",
+    "href": "modeling/S11_SNARC.html#recap",
+    "title": "Simulation 11: SNARC effect",
+    "section": "Recap",
+    "text": "Recap\nThis is a GPT simulation of the SNARC effect, which is commonly observed in participants who have a mental number line with small to large numbers going from left to right.\nA participant is presented with a digit from 1 to 9, and they respond whether the digit is odd or even with a right or left button press. People may be faster to press the left button when the stimulus is a small number compared to a large number, and faster to press the right button when the stimulus is a large number compared to a small number."
+  },
+  {
+    "objectID": "modeling/S11_SNARC.html#load-libraries",
+    "href": "modeling/S11_SNARC.html#load-libraries",
+    "title": "Simulation 11: SNARC effect",
+    "section": "Load libraries",
+    "text": "Load libraries\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(openai)\nlibrary(patchwork)\nlibrary(xtable)"
+  },
+  {
+    "objectID": "modeling/S11_SNARC.html#run-model",
+    "href": "modeling/S11_SNARC.html#run-model",
+    "title": "Simulation 11: SNARC effect",
+    "section": "Run model",
+    "text": "Run model\nNotes: 20 simulated subjects. 32 trials each. Stimuli were 1,2,3,4,6,7,8,9. Respond left for odd, right for even.\nThe prompt contains only basic information to complete the task.\nUsed gpt-3.5-turbo-16k, with max tokens 10000.\nProblems: Still getting the occasional invalid JSON back, mostly due to the chatbot prefacing its response with a message before the JSON. This thread may be helpful https://community.openai.com/t/getting-response-data-as-a-fixed-consistent-json-response/28471/31?page=2.\n\n\nShow the code\n# Use numbers 1 to 9.\n\nsnarc_items &lt;- data.frame(stimulus = c(1,2,3,4,6,7,8,9),\n                           instruction = \"Respond left for odd, right for even numbers\",\n                           response = \"?\",\n                           reaction_time = \"?\")\n\n#set up variables to store data\nall_sim_data &lt;- tibble()\ngpt_response_list &lt;- list()\n\n# request multiple subjects\n# submit a query to open ai using the following prompt\n# note: responses in JSON format are requested\n\nfor(i in 1:20){\n  print(i)\n  \n  # construct trials data frame\n  snarc_trials &lt;- snarc_items[rep(1:nrow(snarc_items),4),]\n \n  trials &lt;- snarc_trials \n  trials &lt;- trials[sample(1:nrow(trials)),]\n  trials &lt;- trials %&gt;%\n    mutate(trial = 1:nrow(trials)) %&gt;%\n    relocate(instruction) %&gt;%\n    relocate(trial)\n  \n   # run the api call to openai\n  \n gpt_response &lt;- create_chat_completion(\n   model = \"gpt-3.5-turbo-16k\",\n   max_tokens = 10000,\n   messages = list(\n       list(\n           \"role\" = \"system\",\n           \"content\" = \"You are a simulated participant in a human cognition experiment. Complete the task as instructed and record your simulated responses in a JSON file. Do not include any explanations, only provide a RFC8259 compliant JSON response.\"),\n       list(\"role\" = \"assistant\",\n            \"content\" = \"OK, I am ready.\"),\n       list(\"role\" = \"user\",\n           \"content\" = paste('You are a simulated participant in a human cognition experiment. Complete the task as instructed and record your simulated responses in JSON. Your task is to simulate human performance in a number judgment task. You will be given the task in the form a JSON object. The JSON object contains the task instruction and the stimulus on each trial. Your task is to follow the instruction and respond to the stimulus as quickly and accurately as a human participant would. The instructions are to identify the stimulus by responding left for odd numbers and right for even numbers. When you simulate data make sure it conforms to how humans would perform this task. The JSON object contains the symbol ? in locations where you will generate simulated responses. You will generate a simulated identification response, and a simulated reaction time for each trial. Put the simulated identification response and reaction time into a JSON array using this format: [{\"trial\": \"trial number, integer\", \"instruction\" = \"the task instruction, string\", \"stimulus\": \"the stimulus, integer\", \"response\": \"the simulated identification response, string\",\"reaction_time\": \"the simulated reaction time, milliseconds an integer\"}].', \"\\n\\n\", jsonlite::toJSON(trials), collapse = \"\\n\")\n           \n       )\n   )\n)\n  \n  # save the output from openai\n  gpt_response_list[[i]] &lt;- gpt_response\n  print(gpt_response$usage$total_tokens)\n  \n  # validate the JSON  \n  test_JSON &lt;- jsonlite::validate(gpt_response$choices$message.content)\n  print(test_JSON)\n\n  # validation checks pass, write the simulated data to all_sim_data \n  if(test_JSON == TRUE){\n    sim_data &lt;- jsonlite::fromJSON(gpt_response$choices$message.content)\n    \n    if(sum(names(sim_data) == c(\"trial\",\"instruction\",\"stimulus\",\"response\",\"reaction_time\")) == 5) {\n      \n      sim_data &lt;- sim_data %&gt;%\n        mutate(sim_subject = i)\n  \n      all_sim_data &lt;- rbind(all_sim_data,sim_data)\n    }\n    \n  }\n}\n\n# model responses are in JSON format\nsave.image(\"data/simulation_11.RData\")"
+  },
+  {
+    "objectID": "modeling/S11_SNARC.html#analysis",
+    "href": "modeling/S11_SNARC.html#analysis",
+    "title": "Simulation 11: SNARC effect",
+    "section": "Analysis",
+    "text": "Analysis\n\n\nShow the code\nload(file = \"data/simulation_11.RData\")\n\n\nThe LLM occasionally returns invalid JSON. The simulation ran 20 times.\n\n\nShow the code\ntotal_subjects &lt;- length(unique(all_sim_data$sim_subject))\n\n\nThere were 17 out of 20 valid simulated subjects.\n\nReaction time analysis\nThe model made too many mistakes to analyse RTs.\n\n\nShow the code\nall_sim_data &lt;- all_sim_data %&gt;%\n  mutate(reaction_time = as.numeric(reaction_time))\n\n# get mean RTs in each condition for each subject\nrt_data_subject_compatible &lt;- all_sim_data %&gt;%\n  mutate(odd_even = case_when(stimulus %% 2 == 0 ~ \"even\",\n                              stimulus %% 2 != 0 ~ \"odd\"),\n         correct_response = case_when(odd_even == \"odd\" ~ \"left\",\n                                      odd_even == \"even\" ~ \"right\")) %&gt;%\n  mutate(compatible = case_when(stimulus &lt; 5 & correct_response == \"left\" ~ \"compatible\",\n                                stimulus &lt; 5 & correct_response == \"right\" ~ \"incompatible\",\n                                stimulus &gt; 5 & correct_response == \"left\" ~ \"incompatible\",\n                                stimulus &gt; 5 & correct_response == \"right\" ~ \"compatible\")\n         ) %&gt;%\n  mutate(accuracy = case_when(correct_response == response ~ TRUE,\n                              correct_response != response ~ FALSE\n                              )\n         ) %&gt;%\n  filter(accuracy == TRUE) %&gt;%\n  group_by(compatible,sim_subject) %&gt;%\n  summarize(mean_rt = mean(reaction_time), .groups = \"drop\")\n\n\n# Compute difference scores for each subject\nrt_data_subject_SNARC &lt;- rt_data_subject_compatible %&gt;%\n  pivot_wider(names_from = compatible,\n              values_from = mean_rt) %&gt;%\n  mutate(SNARC_effect = incompatible-compatible)\n\n# make plots\n\nF1A &lt;- ggplot(rt_data_subject_compatible, aes(x = compatible,\n                                       y = mean_rt))+\n  geom_violin()+\n  stat_summary(fun = \"mean\",\n               geom = \"crossbar\",\n               color = \"red\")+\n  geom_point()+\n  theme_classic(base_size=15)+\n  ylab(\"Mean Simulated Reaction Time\") +\n  ggtitle(\"A\")\n\nF1B &lt;- ggplot(rt_data_subject_SNARC, aes(x = ' ',\n                                   y = SNARC_effect))+\n  geom_violin()+\n  stat_summary(fun = \"mean\",\n               geom = \"crossbar\",\n               color = \"red\")+\n  geom_point()+\n  theme_classic(base_size=15)+\n  ylab(\"Simulated SNARC Effects\")+\n  xlab(\"Incompatible - Compatible\")+\n  ggtitle(\"B\")\n\nF1A + F1B\n\n\n\n\n\n13 out of 17 simulated subjects showed a positive SNARC effect.\n\n\nA closer look at reaction times\nHere is a histogram of the individual simulated reaction times.\n\n\nShow the code\nggplot(all_sim_data, aes(x=reaction_time))+\n  geom_histogram(binwidth=50, color=\"white\")+\n  theme_classic()+\n  xlab(\"Simulated Reaction Times\")\n\n\n\n\n\nThe prompt did not specify to produce values with different endings. As with previous simulations, the model prefers values ending in 0.\n\n\nShow the code\nall_sim_data &lt;- all_sim_data %&gt;%\n  mutate(ending_digit = stringr::str_extract(all_sim_data$reaction_time, \"\\\\d$\")) %&gt;%\n  mutate(ending_digit = as.numeric(ending_digit))\n\nggplot(all_sim_data, aes(x=ending_digit))+\n  geom_histogram(binwidth=1, color=\"white\")+\n  scale_x_continuous(breaks=seq(0,9,1))+\n  theme_classic(base_size = 10)+\n  xlab(\"Simulated RT Ones Digit\")"
+  },
+  {
+    "objectID": "modeling/S11_SNARC.html#accuracy-analysis",
+    "href": "modeling/S11_SNARC.html#accuracy-analysis",
+    "title": "Simulation 11: SNARC effect",
+    "section": "Accuracy Analysis",
+    "text": "Accuracy Analysis\n\n\nShow the code\n# report accuracy data\naccuracy_data_subject &lt;- all_sim_data %&gt;%\n  mutate(odd_even = case_when(stimulus %% 2 == 0 ~ \"even\",\n                              stimulus %% 2 != 0 ~ \"odd\"),\n         correct_response = case_when(odd_even == \"odd\" ~ \"left\",\n                                      odd_even == \"even\" ~ \"right\")) %&gt;%\n  mutate(compatible = case_when(stimulus &lt; 5 & correct_response == \"left\" ~ \"compatible\",\n                                stimulus &lt; 5 & correct_response == \"right\" ~ \"incompatible\",\n                                stimulus &gt; 5 & correct_response == \"left\" ~ \"incompatible\",\n                                stimulus &gt; 5 & correct_response == \"right\" ~ \"compatible\")\n         ) %&gt;%\n  mutate(accuracy = case_when(correct_response == response ~ TRUE,\n                              correct_response != response ~ FALSE\n          ))  %&gt;%\n  group_by(compatible,sim_subject) %&gt;%\n  summarize(proportion_correct = mean(accuracy), .groups = \"drop\")\n\nggplot(accuracy_data_subject, aes(x = compatible,\n                                  y = proportion_correct))+\n  geom_violin()+\n  stat_summary(fun = \"mean\",\n               geom = \"crossbar\",\n               color = \"red\")+\n  geom_point()+\n  theme_classic(base_size=15)+\n  ylab(\"Simulated Proportion Correct\")+\n  xlab(\"Compatibility\")\n\n\n\n\n\nThe model was always made correct responses."
+  },
+  {
+    "objectID": "modeling/S11_SNARC.html#discussion",
+    "href": "modeling/S11_SNARC.html#discussion",
+    "title": "Simulation 11: SNARC effect",
+    "section": "Discussion",
+    "text": "Discussion\nIt appears that the model produced a typical SNARC effect with minimal prompting. I did not counterbalance whether the odd or even response was left or right."
   }
 ]
