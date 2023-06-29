@@ -2,50 +2,54 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/index.html</loc>
-    <lastmod>2023-06-29T12:26:13.725Z</lastmod>
+    <lastmod>2023-06-29T13:58:21.934Z</lastmod>
   </url>
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S1_basic_stroop.html</loc>
-    <lastmod>2023-06-28T21:16:12.261Z</lastmod>
+    <lastmod>2023-06-29T13:58:29.722Z</lastmod>
   </url>
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/modeling/todo.html</loc>
-    <lastmod>2023-06-28T21:16:13.304Z</lastmod>
+    <lastmod>2023-06-29T13:58:30.735Z</lastmod>
   </url>
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S3_stroop_pc.html</loc>
-    <lastmod>2023-06-28T21:16:20.265Z</lastmod>
+    <lastmod>2023-06-29T13:58:37.536Z</lastmod>
   </url>
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S7_Stroop_task_switching.html</loc>
-    <lastmod>2023-06-29T11:51:39.128Z</lastmod>
+    <lastmod>2023-06-29T13:58:44.933Z</lastmod>
   </url>
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S5_df_to_json.html</loc>
-    <lastmod>2023-06-28T21:16:31.251Z</lastmod>
+    <lastmod>2023-06-29T13:58:48.548Z</lastmod>
   </url>
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S8_Stroop_task_switchingB.html</loc>
-    <lastmod>2023-06-28T21:16:38.468Z</lastmod>
+    <lastmod>2023-06-29T13:58:55.943Z</lastmod>
   </url>
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S4_trial_by_trial.html</loc>
-    <lastmod>2023-06-28T21:16:42.096Z</lastmod>
+    <lastmod>2023-06-29T13:58:59.624Z</lastmod>
   </url>
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S6_stroop_pc.html</loc>
-    <lastmod>2023-06-28T21:16:47.966Z</lastmod>
+    <lastmod>2023-06-29T13:59:05.606Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S9_flanker.html</loc>
+    <lastmod>2023-06-29T14:02:30.532Z</lastmod>
   </url>
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S2_stroop_instructions.html</loc>
-    <lastmod>2023-06-28T21:16:54.576Z</lastmod>
+    <lastmod>2023-06-29T13:59:18.298Z</lastmod>
   </url>
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/readme.html</loc>
-    <lastmod>2023-06-28T21:16:55.451Z</lastmod>
+    <lastmod>2023-06-29T13:59:19.182Z</lastmod>
   </url>
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/writing/Interim_overview.html</loc>
-    <lastmod>2023-06-28T21:53:59.896Z</lastmod>
+    <lastmod>2023-06-29T13:59:20.477Z</lastmod>
   </url>
 </urlset>

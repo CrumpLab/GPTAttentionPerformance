@@ -9,7 +9,7 @@ author:
 abstract: "Simulation 7 involved a Stroop task with task-switching. The model did not generate data typical of human performance. This simulation gives the model explicit instructions about how performance ought to look. The results didn't change from simulation 7."
 date: 6-28-2023
 title-block-style: default
-order: 8
+order: 9
 format:
   html:
     code-overflow: wrap

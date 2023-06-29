@@ -191,6 +191,12 @@ gtag('config', 'G-N737DQ9WMT', { 'anonymize_ip': true});
  <span class="menu-text">Simulation 8: Stroop Task Switching with explicit instructions</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../modeling/S9_flanker.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Simulation 9: Flanker Task</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -222,13 +228,6 @@ gtag('config', 'G-N737DQ9WMT', { 'anonymize_ip': true});
   <ul>
   <li><a href="#blog-post-summary" id="toc-blog-post-summary" class="nav-link active" data-scroll-target="#blog-post-summary">Blog post summary</a></li>
   <li><a href="#to-do" id="toc-to-do" class="nav-link" data-scroll-target="#to-do">To do</a></li>
-  <li><a href="#simulations" id="toc-simulations" class="nav-link" data-scroll-target="#simulations">Simulations</a>
-  <ul class="collapse">
-  <li><a href="#simulation-1-basic-stroop" id="toc-simulation-1-basic-stroop" class="nav-link" data-scroll-target="#simulation-1-basic-stroop">Simulation 1: Basic Stroop</a></li>
-  <li><a href="#simulation-2-stroop-instructions" id="toc-simulation-2-stroop-instructions" class="nav-link" data-scroll-target="#simulation-2-stroop-instructions">Simulation 2: Stroop Instructions</a></li>
-  <li><a href="#simulation-3-proportion-congruent" id="toc-simulation-3-proportion-congruent" class="nav-link" data-scroll-target="#simulation-3-proportion-congruent">Simulation 3: Proportion congruent</a></li>
-  <li><a href="#simulation-4-reverse-the-task" id="toc-simulation-4-reverse-the-task" class="nav-link" data-scroll-target="#simulation-4-reverse-the-task">Simulation 4: Reverse the task</a></li>
-  </ul></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/CrumpLab/GPTAttentionPerformance/blob/main/modeling/todo.qmd" class="toc-action">View source</a></p><p><a href="https://github.com/CrumpLab/GPTAttentionPerformance/edit/main/modeling/todo.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/CrumpLab/GPTAttentionPerformance/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -313,45 +312,33 @@ gtag('config', 'G-N737DQ9WMT', { 'anonymize_ip': true});
 <li><input type="checkbox" checked="">Run multiple subjects, say batches of 20-30, which should be enough for the kinds of questions I want to ask</li>
 </ul>
 <p>Answer the following basic questions</p>
-<ul class="task-list">
-<li><input type="checkbox" checked="">Does the model produce Stroop effects in RT and accuracy?</li>
-<li><input type="checkbox" checked="">Does the model produce different answers for each run of simulated subjects?</li>
-<li><input type="checkbox" checked="">Does the model produce RTs that look like human subject RTs?</li>
-<li><input type="checkbox" checked="">Does the model produce additional Stroop phenomena without further prompting?
 <ul>
+<li><p><input type="checkbox" checked="">Does the model produce Stroop effects in RT and accuracy?</p></li>
+<li><p><input type="checkbox" checked="">Does the model produce different answers for each run of simulated subjects?</p></li>
+<li><p><input type="checkbox" checked="">Does the model produce RTs that look like human subject RTs?</p></li>
+<li><p><input type="checkbox" checked="">Does the model produce additional Stroop phenomena without further prompting?</p>
+<ul class="task-list">
 <li><input type="checkbox" checked="">Congruency sequence effect?</li>
-<li>[] Proportion Congruent effect?</li>
+<li><input type="checkbox" checked="">Proportion Congruent effect?</li>
 </ul></li>
-<li><input type="checkbox" checked="">Can the instruction prompt be used to control how the model simulates performance.
+<li><p><input type="checkbox" checked="">Can the instruction prompt be used to control how the model simulates performance.</p>
 <ul>
 <li><input type="checkbox" checked="">simulate 75% correct</li>
 <li>[] simulate 50% correct</li>
-<li>[] simulate some long reaction times</li>
-<li>[] simulate a reverse Stroop effect.</li>
+<li><input type="checkbox" checked="">simulate some long reaction times</li>
+<li><input type="checkbox" checked="">simulate a reverse Stroop effect.</li>
 <li>[] simulate proportion congruent effects</li>
 </ul></li>
+<li><p>[] simulate some other tasks</p></li>
+<li><p>[] Flanker task</p></li>
+<li><p>[] Simon Task</p></li>
+<li><p>[] SRT (Nissen &amp; Bullemer)</p></li>
+<li><p>[] Negative Priming</p></li>
+<li><p>[] Inhibition of Return</p></li>
+<li><p>[] SNARC effect</p></li>
 </ul>
-</section>
-<section id="simulations" class="level2">
-<h2 class="anchored" data-anchor-id="simulations">Simulations</h2>
-<section id="simulation-1-basic-stroop" class="level3">
-<h3 class="anchored" data-anchor-id="simulation-1-basic-stroop">Simulation 1: Basic Stroop</h3>
-<p>25 simulated subjects. 24 trials each. 50% congruent/incongruent. Simple instruction prompt. Shows Stroop effects, and congruent sequence effects. RTs are too round. Accuracy is too good.</p>
-</section>
-<section id="simulation-2-stroop-instructions" class="level3">
-<h3 class="anchored" data-anchor-id="simulation-2-stroop-instructions">Simulation 2: Stroop Instructions</h3>
-<p>Same as above, but change to prompt for more “random” RTs, and worse accuracy. This worked.</p>
-</section>
-<section id="simulation-3-proportion-congruent" class="level3">
-<h3 class="anchored" data-anchor-id="simulation-3-proportion-congruent">Simulation 3: Proportion congruent</h3>
-<p>Give the model a low or high proportion congruent list. Don’t say anything about high or low proportion congruent being an issue in the prompt. See if the model generates data that nevertheless show a proportion congruent effect.</p>
-</section>
-<section id="simulation-4-reverse-the-task" class="level3">
-<h3 class="anchored" data-anchor-id="simulation-4-reverse-the-task">Simulation 4: Reverse the task</h3>
-<p>Have the model perform “word-reading” instead of “color-naming”. This usually shows a much smaller Stroop. What does the model do?</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
