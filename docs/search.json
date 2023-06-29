@@ -690,7 +690,7 @@
     "href": "modeling/S11_SNARC.html#recap",
     "title": "Simulation 11: SNARC effect",
     "section": "Recap",
-    "text": "Recap\nThis is a GPT simulation of the SNARC effect, which is commonly observed in participants who have a mental number line with small to large numbers going from left to right.\nA participant is presented with a digit from 1 to 9, and they respond whether the digit is odd or even with a right or left button press. People may be faster to press the left button when the stimulus is a small number compared to a large number, and faster to press the right button when the stimulus is a large number compared to a small number."
+    "text": "Recap\nThis is a GPT simulation of the SNARC effect, which is commonly observed in participants who have a mental number line with small to large numbers going from left to right.\nA participant is presented with a digit from 1 to 9, and they judge whether the digit is odd or even with a right or left button press. People are faster to press the left button when the stimulus is a small number compared to a large number, and faster to press the right button when the stimulus is a large number compared to a small number."
   },
   {
     "objectID": "modeling/S11_SNARC.html#load-libraries",
