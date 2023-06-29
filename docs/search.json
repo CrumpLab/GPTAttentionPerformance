@@ -221,7 +221,7 @@
     "href": "modeling/S7_Stroop_task_switching.html#discussion",
     "title": "Simulation 7: Stroop Task Switching",
     "section": "Discussion",
-    "text": "Discussion\nThis simulation asked whether GPT would return ancillary effects that conform to typical patterns in a Stroop, especially when those results are not explicitly prompted. The simulation was given a Stroop task, and instructed to name the word or color on each trial. Human participants would typically show faster word naming than color naming responses, and smaller Stroop effects on word than color naming trials. The model did not produce faster word than color naming responses, nor did it generate smaller Stroop effects for word than color naming trials. Humans typically show faster responses on task-repeat than task-switch trials. The model did not show the task switching effect."
+    "text": "Discussion\nThis simulation asked whether GPT would return side effects that conform to typical patterns in a Stroop, especially when those results are not explicitly prompted. The simulation was given a Stroop task, and instructed to name the word or color on each trial. Human participants would typically show faster word naming than color naming responses, and smaller Stroop effects on word than color naming trials. The model did not produce faster word than color naming responses, nor did it generate smaller Stroop effects for word than color naming trials. Humans typically show faster responses on task-repeat than task-switch trials. The model did not show the task switching effect."
   },
   {
     "objectID": "modeling/S5_df_to_json.html",
@@ -544,5 +544,12 @@
     "title": "Interim Overview",
     "section": "That’s it for now",
     "text": "That’s it for now"
+  },
+  {
+    "objectID": "index.html#dependencies",
+    "href": "index.html#dependencies",
+    "title": "Simulating Attention and Performance tasks with an LLM",
+    "section": "Dependencies:",
+    "text": "Dependencies:\nList of R packages used.\n\n# get packages and print version in tibble\ndependencies &lt;- renv::dependencies()\n\nFinding R package dependencies ... Done!\n\nunique_dependencies &lt;- unique(dependencies$Package)\n\ndependency_tibble &lt;- sapply(unique_dependencies,\n       FUN = function(x) as.character(packageVersion(x))) |&gt;\n  tibble::enframe()\n\nknitr::kable(dependency_tibble)\n\n\n\n\nname\nvalue\n\n\n\n\nknitr\n1.42\n\n\nrenv\n0.17.3\n\n\ntibble\n3.1.8\n\n\nrmarkdown\n2.20\n\n\nopenai\n0.4.1\n\n\npatchwork\n1.1.2\n\n\ntidyverse\n1.3.2\n\n\nxtable\n1.8.4\n\n\nstringr\n1.5.0\n\n\npapaja\n0.1.1"
   }
 ]

@@ -23,3 +23,19 @@ Status:
 ## Repository Information
 
 This is a website for a cognitive psychology research project. The aim of this website is to create and share reproducible research assets throughout the project lifespan. This repository is built with [quarto](https://quarto.org). Source code is available from the github repository for this project.
+
+## Dependencies:
+
+List of R packages used.
+
+```{r}
+# get packages and print version in tibble
+dependencies <- renv::dependencies()
+unique_dependencies <- unique(dependencies$Package)
+
+dependency_tibble <- sapply(unique_dependencies,
+       FUN = function(x) as.character(packageVersion(x))) |>
+  tibble::enframe()
+
+knitr::kable(dependency_tibble)
+```
