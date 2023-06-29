@@ -600,5 +600,75 @@
     "title": "Interim Overview",
     "section": "That’s it for now",
     "text": "That’s it for now"
+  },
+  {
+    "objectID": "modeling/S10_simon.html",
+    "href": "modeling/S10_simon.html",
+    "title": "Simulation 10: Simon Task",
+    "section": "",
+    "text": "Started. Finished."
+  },
+  {
+    "objectID": "modeling/S10_simon.html#state",
+    "href": "modeling/S10_simon.html#state",
+    "title": "Simulation 10: Simon Task",
+    "section": "",
+    "text": "Started. Finished."
+  },
+  {
+    "objectID": "modeling/S10_simon.html#recap",
+    "href": "modeling/S10_simon.html#recap",
+    "title": "Simulation 10: Simon Task",
+    "section": "Recap",
+    "text": "Recap\nThe previous simulations focused on the Stroop and Flanker tasks. This simulation uses a version of the Simon task.\nIn a Simon task, participants respond to stimulus using a right or left manual response. For example, a red circle could require the right response, and a green circle a left response. The stimuli are presented in one of two locations on a screen: to the left or right of center. In this case, the spatial location of the stimulus can interfere with the assigned response to identify the stimulus. For example, people are faster to press the right key to identify the red stimulus when it is presented in the right location compared to the left location on the screen."
+  },
+  {
+    "objectID": "modeling/S10_simon.html#load-libraries",
+    "href": "modeling/S10_simon.html#load-libraries",
+    "title": "Simulation 10: Simon Task",
+    "section": "Load libraries",
+    "text": "Load libraries\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(openai)\nlibrary(patchwork)\nlibrary(xtable)"
+  },
+  {
+    "objectID": "modeling/S10_simon.html#run-model",
+    "href": "modeling/S10_simon.html#run-model",
+    "title": "Simulation 10: Simon Task",
+    "section": "Run model",
+    "text": "Run model\nNotes: 20 simulated subjects. 20 Simon trials each. 50/50 congruent and incongruent trials.\nThe prompt contains only basic information to complete the task.\nUsed gpt-3.5-turbo-16k, with max tokens 10000.\nProblems: Still getting the occasional invalid JSON back, mostly due to the chatbot prefacing its response with a message before the JSON. This thread may be helpful https://community.openai.com/t/getting-response-data-as-a-fixed-consistent-json-response/28471/31?page=2.\n\n\nShow the code\n# Use letters H and F\n\nsimon_items &lt;- data.frame(stimulus = c(\"red\",\"red\",\"green\",\"green\"),\n                           instruction = \"Identify stimulus. Respond right for red. Respond left for green.\",\n                           location = c(\"left\",\"right\",\"left\",\"right\"),\n                           response = \"?\",\n                           reaction_time = \"?\")\n\n#set up variables to store data\nall_sim_data &lt;- tibble()\ngpt_response_list &lt;- list()\n\n# request multiple subjects\n# submit a query to open ai using the following prompt\n# note: responses in JSON format are requested\n\nfor(i in 1:20){\n  print(i)\n  \n  # construct trials data frame\n  simon_trials &lt;- simon_items[rep(1:nrow(simon_items),5),]\n \n  trials &lt;- simon_trials \n  trials &lt;- trials[sample(1:nrow(trials)),]\n  trials &lt;- trials %&gt;%\n    mutate(trial = 1:nrow(trials)) %&gt;%\n    relocate(instruction) %&gt;%\n    relocate(trial)\n  \n   # run the api call to openai\n  \n gpt_response &lt;- create_chat_completion(\n   model = \"gpt-3.5-turbo-16k\",\n   max_tokens = 10000,\n   messages = list(\n       list(\n           \"role\" = \"system\",\n           \"content\" = \"You are a simulated participant in a human cognition experiment. Complete the task as instructed and record your simulated responses in a JSON file. Do not include any explanations, only provide a RFC8259 compliant JSON response.\"),\n       list(\"role\" = \"assistant\",\n            \"content\" = \"OK, I am ready.\"),\n       list(\"role\" = \"user\",\n           \"content\" = paste('You are a simulated participant in a human cognition experiment. Complete the task as instructed and record your simulated responses in JSON. Your task is to simulate human performance in a letter identification task. You will be given the task in the form a JSON object. The JSON object contains the task instruction and the stimulus on each trial. Your task is to follow the instruction and respond to the stimulus as quickly and accurately as a human participant would. The instructions are to identify the stimulus by responding right for red, and responding left for green. When you simulate data make sure it conforms to how humans would perform this task. The JSON object contains the symbol ? in locations where you will generate simulated responses. You will generate a simulated identification response, and a simulated reaction time for each trial. Put the simulated identification response and reaction time into a JSON array using this format: [{\"trial\": \"trial number, integer\", \"instruction\" = \"the task instruction, string\", \"stimulus\": \"the stimulus, string\", \"location\": \"the location of the stimulus, string\", \"response\": \"the simulated identification response, string\",\"reaction_time\": \"the simulated reaction time, milliseconds an integer\"}].', \"\\n\\n\", jsonlite::toJSON(trials), collapse = \"\\n\")\n           \n       )\n   )\n)\n  \n  # save the output from openai\n  gpt_response_list[[i]] &lt;- gpt_response\n  print(gpt_response$usage$total_tokens)\n  \n  # validate the JSON  \n  test_JSON &lt;- jsonlite::validate(gpt_response$choices$message.content)\n  print(test_JSON)\n\n  # validation checks pass, write the simulated data to all_sim_data \n  if(test_JSON == TRUE){\n    sim_data &lt;- jsonlite::fromJSON(gpt_response$choices$message.content)\n    \n    if(sum(names(sim_data) == c(\"trial\",\"instruction\",\"stimulus\",\"location\",\"response\",\"reaction_time\")) == 6) {\n      \n      sim_data &lt;- sim_data %&gt;%\n        mutate(sim_subject = i)\n  \n      all_sim_data &lt;- rbind(all_sim_data,sim_data)\n    }\n    \n  }\n}\n\n# model responses are in JSON format\nsave.image(\"data/simulation_10.RData\")"
+  },
+  {
+    "objectID": "modeling/S10_simon.html#analysis",
+    "href": "modeling/S10_simon.html#analysis",
+    "title": "Simulation 10: Simon Task",
+    "section": "Analysis",
+    "text": "Analysis\n\n\nShow the code\nload(file = \"data/simulation_10.RData\")\n\n\nThe LLM occasionally returns invalid JSON. The simulation ran 20 times.\n\n\nShow the code\ntotal_subjects &lt;- length(unique(all_sim_data$sim_subject))\n\n\nThere were 19 out of 20 valid simulated subjects.\n\nReaction time analysis\nThe model made too many mistakes to analyse RTs.\n\n\nShow the code\nall_sim_data &lt;- all_sim_data %&gt;%\n  mutate(reaction_time = as.numeric(reaction_time))\n\n# get mean RTs in each condition for each subject\nrt_data_subject_compatible &lt;- all_sim_data %&gt;%\n  mutate(compatible = case_when(stimulus == \"red\" && location == \"right\" ~ \"compatible\",\n                                stimulus == \"red\" && location == \"left\" ~ \"incompatible\",\n                                stimulus == \"green\" && location == \"right\" ~ \"incompatible\",\n                                stimulus == \"green\" && location == \"left\" ~ \"compatible\")\n         )%&gt;%\n  mutate(accuracy = case_when(stimulus == \"red\" && response == \"right\" ~ TRUE,\n                              stimulus == \"red\" && response != \"right\" ~ FALSE,\n                              stimulus == \"green\" && response == \"left\" ~ TRUE,\n                              stimulus == \"green\" && response != \"left\" ~ FALSE\n                              )\n         ) %&gt;%\n  filter(accuracy == TRUE) %&gt;%\n  group_by(compatible,sim_subject) %&gt;%\n  summarize(mean_rt = mean(reaction_time), .groups = \"drop\")\n\n\n# Compute difference scores for each subject\nrt_data_subject_simon &lt;- rt_data_subject_compatible %&gt;%\n  pivot_wider(names_from = compatible,\n              values_from = mean_rt) %&gt;%\n  mutate(Simon_effect = incompatible-compatible)\n\n# make plots\n\nF1A &lt;- ggplot(rt_data_subject_compatible, aes(x = compatible,\n                                       y = mean_rt))+\n  geom_violin()+\n  stat_summary(fun = \"mean\",\n               geom = \"crossbar\",\n               color = \"red\")+\n  geom_point()+\n  theme_classic(base_size=15)+\n  ylab(\"Mean Simulated Reaction Time\") +\n  ggtitle(\"A\")\n\nF1B &lt;- ggplot(rt_data_subject_simon, aes(x = ' ',\n                                   y = Simon_effect))+\n  geom_violin()+\n  stat_summary(fun = \"mean\",\n               geom = \"crossbar\",\n               color = \"red\")+\n  geom_point()+\n  theme_classic(base_size=15)+\n  ylab(\"Simulated Simon Effects\")+\n  xlab(\"Incompatible - Compatible\")+\n  ggtitle(\"B\")\n\nF1A + F1B\n\n\n\n\nA closer look at reaction times\nHere is a histogram of the individual simulated reaction times.\n\n\nShow the code\nggplot(all_sim_data, aes(x=reaction_time))+\n  geom_histogram(binwidth=50, color=\"white\")+\n  theme_classic()+\n  xlab(\"Simulated Reaction Times\")\n\n\n\n\n\nThe prompt did not specify to produce values with different endings. As with previous simulations, the model prefers values ending in 0.\n\n\nShow the code\nall_sim_data &lt;- all_sim_data %&gt;%\n  mutate(ending_digit = stringr::str_extract(all_sim_data$reaction_time, \"\\\\d$\")) %&gt;%\n  mutate(ending_digit = as.numeric(ending_digit))\n\nggplot(all_sim_data, aes(x=ending_digit))+\n  geom_histogram(binwidth=1, color=\"white\")+\n  scale_x_continuous(breaks=seq(0,9,1))+\n  theme_classic(base_size = 10)+\n  xlab(\"Simulated RT Ones Digit\")"
+  },
+  {
+    "objectID": "modeling/S10_simon.html#accuracy-analysis",
+    "href": "modeling/S10_simon.html#accuracy-analysis",
+    "title": "Simulation 10: Simon Task",
+    "section": "Accuracy Analysis",
+    "text": "Accuracy Analysis\n\n\nShow the code\n# report accuracy data\naccuracy_data_subject &lt;- all_sim_data %&gt;%\n  mutate(compatible = case_when(stimulus == \"red\" & location == \"right\" ~ \"compatible\",\n                                stimulus == \"red\" & location == \"left\" ~ \"incompatible\",\n                                stimulus == \"green\" & location == \"right\" ~ \"incompatible\",\n                                stimulus == \"green\" & location == \"left\" ~ \"compatible\")\n         )%&gt;%\n  mutate(accuracy = case_when(stimulus == \"red\" & response == \"right\" ~ TRUE,\n                              stimulus == \"red\" & response != \"right\" ~ FALSE,\n                              stimulus == \"green\" & response == \"left\" ~ TRUE,\n                              stimulus == \"green\" & response != \"left\" ~ FALSE\n                              )\n         )  %&gt;%\n  group_by(compatible,sim_subject) %&gt;%\n  summarize(proportion_correct = mean(accuracy), .groups = \"drop\")\n\nggplot(accuracy_data_subject, aes(x = compatible,\n                                  y = proportion_correct))+\n  geom_violin()+\n  stat_summary(fun = \"mean\",\n               geom = \"crossbar\",\n               color = \"red\")+\n  geom_point()+\n  theme_classic(base_size=15)+\n  ylab(\"Simulated Proportion Correct\")+\n  xlab(\"Compatibility\")\n\n\n\n\n\nThere was a clear Simon effect in the accuracy data. There were several simulated subjects who had no correct trials in one of the two conditions, so reaction time data wasn’t analyzed further."
+  },
+  {
+    "objectID": "modeling/S10_simon.html#discussion",
+    "href": "modeling/S10_simon.html#discussion",
+    "title": "Simulation 10: Simon Task",
+    "section": "Discussion",
+    "text": "Discussion\nThe model in some sense fell prey to the Simon effect, as it performed terribly on incompatible trials. On the one hand it had no problem issuing responses, but the data did not resemble typical ranges of reaction times in this task. Perhaps the GPT simulation would improve with variations on the prompt structure."
+  },
+  {
+    "objectID": "modeling/todo.html#modelling-to-do",
+    "href": "modeling/todo.html#modelling-to-do",
+    "title": "Project Scratchpad",
+    "section": "Modelling To do",
+    "text": "Modelling To do\nNot an exhaustive list, something to get me started.\n\nSettle on one script that can be extended across the examples.\nRun multiple subjects, say batches of 20-30, which should be enough for the kinds of questions I want to ask\n\nAnswer the following basic questions\n\nDoes the model produce Stroop effects in RT and accuracy?\nDoes the model produce different answers for each run of simulated subjects?\nDoes the model produce RTs that look like human subject RTs?\nDoes the model produce additional Stroop phenomena without further prompting?\n\nCongruency sequence effect?\nProportion Congruent effect?\n\nCan the instruction prompt be used to control how the model simulates performance.\n\nsimulate 75% correct\n[] simulate 50% correct\nsimulate some long reaction times\nsimulate a reverse Stroop effect.\n[] simulate proportion congruent effects\n\n[] simulate some other tasks\nFlanker task\nSimon Task\n[] SRT (Nissen & Bullemer)\n[] Negative Priming\n[] Inhibition of Return\n[] SNARC effect"
+  },
+  {
+    "objectID": "modeling/todo.html#writing-to-do",
+    "href": "modeling/todo.html#writing-to-do",
+    "title": "Project Scratchpad",
+    "section": "Writing to do",
+    "text": "Writing to do\n\ninterim overview\n[] consider in more detail what I’m trying to accomplish here and whether this project turns into something more formal than a shared repo on github\n[] Things that make me go hmmm.\n\nthe modeling work is not reproducible\nopenAI says the new default is that data sent through the API will not be used to train models, but this is an opt-in option\nI did not opt in, but if someone else did and re-ran this kind of code with feedback to alter the model resposnes, then the results from this kind of work would change\nUnclear what happens with newer models like GPT 4"
   }
 ]

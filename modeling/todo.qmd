@@ -39,7 +39,7 @@ Then, come up with some goals for moving the project forward.
   - Accuracy was 100%
   - RTs looked almost credible. Many individual RTs had 0 ending, and were too round looking.
 
-## To do
+## Modelling To do
 
 Not an exhaustive list, something to get me started.
 
@@ -63,12 +63,26 @@ Answer the following basic questions
   
 - [] simulate some other tasks
 
-- [] Flanker task
-- [] Simon Task
+- [x] Flanker task
+- [x] Simon Task
 - [] SRT (Nissen & Bullemer)
 - [] Negative Priming
 - [] Inhibition of Return
 - [] SNARC effect
+
+## Writing to do
+
+- [x] interim overview
+
+- [] consider in more detail what I'm trying to accomplish here and whether this project turns into something more formal than a shared repo on github
+
+- [] Things that make me go hmmm.
+
+  - the modeling work is not reproducible
+  - openAI says the new default is that data sent through the API will not be used to train models, but this is an opt-in option
+  - I did not opt in, but if someone else did and re-ran this kind of code with feedback to alter the model resposnes, then the results from this kind of work would change
+  - Unclear what happens with newer models like GPT 4
+
 
 
 
