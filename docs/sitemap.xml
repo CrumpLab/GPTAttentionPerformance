@@ -2,62 +2,62 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/index.html</loc>
-    <lastmod>2023-07-13T19:46:23.519Z</lastmod>
+    <lastmod>2023-07-13T20:30:13.713Z</lastmod>
   </url>
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S1_basic_stroop.html</loc>
-    <lastmod>2023-06-29T13:58:29.722Z</lastmod>
+    <lastmod>2023-07-13T20:30:23.334Z</lastmod>
   </url>
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/modeling/todo.html</loc>
-    <lastmod>2023-06-29T15:13:24.653Z</lastmod>
+    <lastmod>2023-07-13T20:30:24.379Z</lastmod>
   </url>
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S3_stroop_pc.html</loc>
-    <lastmod>2023-06-29T13:58:37.536Z</lastmod>
+    <lastmod>2023-07-13T20:30:30.983Z</lastmod>
   </url>
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S7_Stroop_task_switching.html</loc>
-    <lastmod>2023-06-29T13:58:44.933Z</lastmod>
-  </url>
-  <url>
-    <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S5_df_to_json.html</loc>
-    <lastmod>2023-06-29T13:58:48.548Z</lastmod>
-  </url>
-  <url>
-    <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S8_Stroop_task_switchingB.html</loc>
-    <lastmod>2023-06-29T13:58:55.943Z</lastmod>
-  </url>
-  <url>
-    <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S4_trial_by_trial.html</loc>
-    <lastmod>2023-06-29T13:58:59.624Z</lastmod>
-  </url>
-  <url>
-    <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S6_stroop_pc.html</loc>
-    <lastmod>2023-06-29T13:59:05.606Z</lastmod>
-  </url>
-  <url>
-    <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S9_flanker.html</loc>
-    <lastmod>2023-07-13T19:46:31.110Z</lastmod>
-  </url>
-  <url>
-    <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S2_stroop_instructions.html</loc>
-    <lastmod>2023-06-29T13:59:18.298Z</lastmod>
-  </url>
-  <url>
-    <loc>https://crumplab.com/GPTAttentionPerformance/readme.html</loc>
-    <lastmod>2023-06-29T13:59:19.182Z</lastmod>
-  </url>
-  <url>
-    <loc>https://crumplab.com/GPTAttentionPerformance/writing/Interim_overview.html</loc>
-    <lastmod>2023-07-13T19:46:38.227Z</lastmod>
-  </url>
-  <url>
-    <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S10_simon.html</loc>
-    <lastmod>2023-07-13T19:46:33.582Z</lastmod>
+    <lastmod>2023-07-13T20:30:38.135Z</lastmod>
   </url>
   <url>
     <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S11_SNARC.html</loc>
-    <lastmod>2023-07-13T19:46:35.940Z</lastmod>
+    <lastmod>2023-07-13T20:30:43.996Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S10_simon.html</loc>
+    <lastmod>2023-07-13T20:30:49.086Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S5_df_to_json.html</loc>
+    <lastmod>2023-07-13T20:30:52.529Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S8_Stroop_task_switchingB.html</loc>
+    <lastmod>2023-07-13T20:31:01.164Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S4_trial_by_trial.html</loc>
+    <lastmod>2023-07-13T20:31:04.646Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S6_stroop_pc.html</loc>
+    <lastmod>2023-07-13T20:31:10.300Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S9_flanker.html</loc>
+    <lastmod>2023-07-13T20:31:16.130Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crumplab.com/GPTAttentionPerformance/modeling/S2_stroop_instructions.html</loc>
+    <lastmod>2023-07-13T20:31:22.529Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crumplab.com/GPTAttentionPerformance/readme.html</loc>
+    <lastmod>2023-07-13T20:31:23.435Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crumplab.com/GPTAttentionPerformance/writing/Interim_overview.html</loc>
+    <lastmod>2023-07-13T20:31:24.693Z</lastmod>
   </url>
 </urlset>
